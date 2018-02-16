@@ -41,10 +41,19 @@ class PdoTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers Freezer\Storage\Pdo::__construct
      */
-    public function testInstantiationWorks()
+    public function testIsConstructedWhenPdoArgumentIsObject()
     {
-        $storage = new Pdo(array('driver' => 'sqlite'));
-        $this->assertInstanceOf('\\Freezer\\Storage\\Pdo', $storage);
+        $this->assertInstanceOf('\\Freezer\\Storage\\Pdo', $this->storage);
+    }
+
+    /**
+     * @covers Freezer\Storage\Pdo::__construct
+     */
+    public function testIsConstructedWhenPdoArgumentIsParameterArray()
+    {
+        $params = array('driver' => 'sqlite', 'tblname' => 'freezer');
+
+        $this->assertInstanceOf('\\Freezer\\Storage\\Pdo', new Pdo($params));
     }
 
     /**

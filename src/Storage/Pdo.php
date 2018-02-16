@@ -44,6 +44,10 @@ class Pdo extends Storage
 
         $this->db = new Db($pdo, $db_options);
         $this->tblname = 'freezer';
+
+        if (is_array($pdo) and isset($pdo['tblname'])) {
+            $this->tblname = $pdo['tblname'];
+        }
     }
 
     /**
