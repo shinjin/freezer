@@ -1,0 +1,6 @@
+.DS_STORE
+build
+cache
+coverage
+docs/api
+vendor
