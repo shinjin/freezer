@@ -1,7 +1,7 @@
 {
     "name": "shinjin/freezer",
     "description": "A cool object storage library",
-    "keywords": ["freezer", "object storage"],
+    "keywords": ["freezer", "object store", "object storage"],
     "homepage": "http://github.com/shinjin/freezer",
     "type": "library",
     "license": "MIT",
