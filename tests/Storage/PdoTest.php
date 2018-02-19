@@ -51,7 +51,7 @@ class PdoTest extends \PHPUnit\Framework\TestCase
      */
     public function testIsConstructedWhenPdoArgumentIsParameterArray()
     {
-        $params = array('driver' => 'sqlite', 'tblname' => 'freezer');
+        $params = array('driver' => 'sqlite', 'table' => 'freezer');
 
         $this->assertInstanceOf('\\Freezer\\Storage\\Pdo', new Pdo($params));
     }
