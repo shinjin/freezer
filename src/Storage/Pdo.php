@@ -16,7 +16,7 @@ class Pdo extends Storage
     /**
      * @var string
      */
-    private $tblname;
+    private $table;
 
     /**
      * Constructor.
@@ -43,10 +43,10 @@ class Pdo extends Storage
         parent::__construct($freezer, $useLazyLoad);
 
         $this->db = new Db($pdo, $db_options);
-        $this->tblname = 'freezer';
+        $this->table = 'freezer';
 
-        if (is_array($pdo) and isset($pdo['tblname'])) {
-            $this->tblname = $pdo['tblname'];
+        if (is_array($pdo) and isset($pdo['table'])) {
+            $this->table = $pdo['table'];
         }
     }
 
@@ -63,7 +63,7 @@ class Pdo extends Storage
                 );
 
                 $this->db->insert(
-                    $this->tblname,
+                    $this->table,
                     array('id' => $id, 'body' => json_encode($payload))
                 );
             }
@@ -78,7 +78,7 @@ class Pdo extends Storage
         $isRoot = empty($objects);
 
         if (!isset($objects[$id])) {
-            $query = sprintf('SELECT * FROM %s WHERE id = ?', $this->tblname);
+            $query = sprintf('SELECT * FROM %s WHERE id = ?', $this->table);
             $sth = $this->db->query($query, array($id));
 
             if (($result = $sth->fetch()) !== false) {

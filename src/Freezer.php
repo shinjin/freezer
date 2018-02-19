@@ -6,14 +6,19 @@ use Freezer\Exception\InvalidArgumentException;
 class Freezer
 {
     /**
-     * @var boolean
+     * @var string
      */
-    protected $useAutoload = true;
+    protected $idAttribute;
 
     /**
      * @var array
      */
-    protected $blacklist = array();
+    protected $blacklist;
+
+    /**
+     * @var boolean
+     */
+    protected $useAutoload;
 
     /**
      * Constructor.
@@ -22,8 +27,12 @@ class Freezer
      * @param  boolean                  $useAutoload
      * @throws InvalidArgumentException
      */
-    public function __construct(array $blacklist = array(), $useAutoload = true)
-    {
+    public function __construct(
+        $idAttribute = '__freezer_uuid',
+        array $blacklist = array(),
+        $useAutoload = true
+    ){
+        $this->setIdAttribute($idAttribute);
         $this->setBlacklist($blacklist);
         $this->setUseAutoload($useAutoload);
     }
@@ -36,7 +45,7 @@ class Freezer
      * @return array            The frozen object(s).
      * @throws InvalidArgumentException
      */
-    public function freeze($object, array &$objects = array(), $id = null)
+    public function freeze($object, array &$objects = array())
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException(1, 'object');
@@ -44,12 +53,12 @@ class Freezer
 
         // If the object has not been frozen before, generate a new UUID and
         // store it in the "special" __freezer_uuid attribute.
-        if (!isset($object->__freezer_uuid)) {
-            $object->__freezer_uuid = $id ?: $this->generateId();
+        if (!isset($object->{$this->idAttribute})) {
+            $object->{$this->idAttribute} = $this->generateId();
         }
 
         $isDirty = $this->isDirty($object, true);
-        $uuid    = $object->__freezer_uuid;
+        $uuid    = $object->{$this->idAttribute};
 
         if (!isset($objects[$uuid])) {
             $objects[$uuid] = array(
@@ -60,7 +69,7 @@ class Freezer
 
             // Iterate over the attributes of the object.
             foreach ($this->readAttributes($object) as $k => $v) {
-                if ($k !== '__freezer_uuid') {
+                if ($k !== $this->idAttribute) {
                     if (is_array($v)) {
                         $this->freezeArray($v, $objects);
                     } elseif (is_object($v) &&
@@ -69,7 +78,7 @@ class Freezer
                         $this->freeze($v, $objects);
 
                         // Replace $v with the aggregated object's UUID.
-                        $v = '__freezer_' . $v->__freezer_uuid;
+                        $v = '__freezer_' . $v->{$this->idAttribute};
                     } elseif (is_resource($v)) {
                         $v = null;
                     }
@@ -154,7 +163,7 @@ class Freezer
             }
 
             // Store UUID.
-            $objects[$root]->__freezer_uuid = $root;
+            $objects[$root]->{$this->idAttribute} = $root;
 
             // Store hash.
             if (isset($state['__freezer_hash'])) {
@@ -193,6 +202,30 @@ class Freezer
     }
 
     /**
+     * Returns the id attribute name
+     *
+     * @return string
+     */
+    public function getIdAttribute()
+    {
+        return $this->idAttribute;
+    }
+
+    /**
+     * Sets the name to use for the id attribute
+     *
+     * @param  string $idAttribute
+     */
+    public function setIdAttribute($idAttribute)
+    {
+        if (!is_string($idAttribute)) {
+            throw new InvalidArgumentException(1, 'string');
+        }
+
+        $this->idAttribute = $idAttribute;
+    }
+
+    /**
      * Returns the blacklist of class names for which aggregates objects are
      * not frozen.
      *
@@ -208,7 +241,6 @@ class Freezer
      * not frozen.
      *
      * @param  array $blacklist
-     * @throws InvalidArgumentException
      */
     public function setBlacklist(array $blacklist)
     {
@@ -267,11 +299,11 @@ class Freezer
             if (is_array($value)) {
                 $attributes[$key] = '<array>';
             } elseif (is_object($value)) {
-                if (!isset($value->__freezer_uuid)) {
-                    $value->__freezer_uuid = $this->generateId();
+                if (!isset($value->{$this->idAttribute})) {
+                    $value->{$this->idAttribute} = $this->generateId();
                 }
 
-                $attributes[$key] = $value->__freezer_uuid;
+                $attributes[$key] = $value->{$this->idAttribute};
             } elseif (is_resource($value)) {
                 $attributes[$key] = null;
             }

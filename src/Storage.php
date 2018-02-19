@@ -56,16 +56,16 @@ abstract class Storage
      * @param  object $object The object that is to be stored.
      * @return string
      */
-    public function store($object, $id = null)
+    public function store($object)
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException(1, 'object');
         }
 
         $objects = array();
-        $this->doStore($this->freezer->freeze($object, $objects, $id));
+        $this->doStore($this->freezer->freeze($object, $objects));
 
-        return $object->__freezer_uuid;
+        return $object->{$this->freezer->getIdAttribute()};
     }
 
     /**

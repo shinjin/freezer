@@ -590,6 +590,8 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers Freezer\Freezer::__construct
+     * @covers Freezer\Freezer::setIdAttribute
+     * @covers Freezer\Freezer::getIdAttribute
      * @covers Freezer\Freezer::setBlacklist
      * @covers Freezer\Freezer::getBlacklist
      * @covers Freezer\Freezer::setUseAutoload
@@ -599,8 +601,19 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     {
         $freezer = new Freezer;
 
-        $this->assertEquals(array(), $freezer->getBlacklist());
+        $this->assertSame('__freezer_uuid', $freezer->getIdAttribute());
+        $this->assertSame(array(), $freezer->getBlacklist());
         $this->assertTrue($freezer->getUseAutoload());
+    }
+
+    /**
+     * @covers            Freezer\Freezer::__construct
+     * @covers            Freezer\Freezer::setIdAttribute
+     * @expectedException InvalidArgumentException
+     */
+    public function testExceptionIsRaisedForInvalidConstructorArguments1()
+    {
+        $freezer = new Freezer(null);
     }
 
     /**
@@ -608,9 +621,9 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
      * @covers            Freezer\Freezer::setUseAutoload
      * @expectedException InvalidArgumentException
      */
-    public function testExceptionIsRaisedForInvalidConstructorArguments()
+    public function testExceptionIsRaisedForInvalidConstructorArguments2()
     {
-        $freezer = new Freezer(array(), null);
+        $freezer = new Freezer('__freezer_uuid', array(), null);
     }
 
     /**
