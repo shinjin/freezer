@@ -8,17 +8,17 @@ class Freezer
     /**
      * @var string
      */
-    protected $idAttribute;
+    private $idAttribute;
 
     /**
      * @var array
      */
-    protected $blacklist;
+    private $blacklist;
 
     /**
      * @var boolean
      */
-    protected $useAutoload;
+    private $useAutoload;
 
     /**
      * Constructor.

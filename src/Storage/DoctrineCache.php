@@ -10,7 +10,7 @@ class DoctrineCache extends Storage
     /**
      * @var Doctrine\CacheProvider
      */
-    protected $cache;
+    private $cache;
 
     /**
      * Constructor.

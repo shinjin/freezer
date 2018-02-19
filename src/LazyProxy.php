@@ -6,17 +6,17 @@ class LazyProxy
     /**
      * @var Freezer\Storage
      */
-    protected $storage;
+    private $storage;
 
     /**
      * @var string
      */
-    protected $uuid;
+    private $uuid;
 
     /**
      * @var object
      */
-    protected $thawedObject;
+    private $thawedObject;
 
     /**
      * Constructor.

@@ -10,17 +10,17 @@ class CouchDB extends Storage
     /**
      * @var string
      */
-    protected $database;
+    private $database;
 
     /**
      * @var string
      */
-    protected $host;
+    private $host;
 
     /**
      * @var int
      */
-    protected $port;
+    private $port;
 
     /**
      * Constructor.
