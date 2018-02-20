@@ -346,96 +346,35 @@ class WithoutLazyLoadTest extends TestCase
      */
     public function testStoringAndFetchingAnObjectWorks()
     {
+        $expected = new \A(1, 2, 3);
+        $this->storage->store($expected);
+
+        $actual = $this->storage->fetch('a');
+        unset($actual->__freezer['_rev']);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @covers  Freezer\Storage::store
+     * @covers  Freezer\Storage::fetch
+     * @covers  Freezer\Storage\CouchDB::doStore
+     * @covers  Freezer\Storage\CouchDB::doFetch
+     * @covers  Freezer\Storage\CouchDB::send
+     * @depends testStoringAnObjectWorks
+     */
+    public function testStoringAndFetchingAndUpdatingAnObjectWorks()
+    {
         $object = new \A(1, 2, 3);
         $this->storage->store($object);
 
-        $this->assertEquals($object, $this->storage->fetch('a'));
-    }
+        $expected = $this->storage->fetch('a');
+        $expected->a = null;
+        $this->storage->store($expected);
 
-    /**
-     * @covers  Freezer\Storage::store
-     * @covers  Freezer\Storage::fetch
-     * @covers  Freezer\Storage\CouchDB::doStore
-     * @covers  Freezer\Storage\CouchDB::doFetch
-     * @depends testStoringAnObjectThatAggregatesOtherObjectsWorks
-     */
-    public function testStoringAndFetchingAnObjectThatAggregatesOtherObjectsWorks()
-    {
-        $object = new \C;
-        $this->storage->store($object);
+        $actual = $this->storage->fetch('a');
 
-        $this->assertEquals($object, $this->storage->fetch('a'));
-    }
-
-    /**
-     * @covers  Freezer\Storage::store
-     * @covers  Freezer\Storage::fetch
-     * @covers  Freezer\Storage::fetchArray
-     * @covers  Freezer\Storage\CouchDB::doStore
-     * @covers  Freezer\Storage\CouchDB::doFetch
-     * @depends testStoringAnObjectThatAggregatesOtherObjectsInAnArrayWorks
-     */
-    public function testStoringAndFetchingAnObjectThatAggregatesOtherObjectsInAnArrayWorks()
-    {
-        $object = new \D;
-        $this->storage->store($object);
-
-        $this->assertEquals($object, $this->storage->fetch('a'));
-    }
-
-    /**
-     * @covers  Freezer\Storage::store
-     * @covers  Freezer\Storage::fetch
-     * @covers  Freezer\Storage::fetchArray
-     * @covers  Freezer\Storage\CouchDB::doStore
-     * @covers  Freezer\Storage\CouchDB::doFetch
-     * @depends testStoringAnObjectThatAggregatesOtherObjectsInANestedArrayWorks
-     */
-    public function testStoringAndFetchingAnObjectThatAggregatesOtherObjectsInANestedArrayWorks()
-    {
-        $object = new \E;
-        $this->storage->store($object);
-
-        $this->assertEquals($object, $this->storage->fetch('a'));
-    }
-
-    /**
-     * @covers  Freezer\Storage::store
-     * @covers  Freezer\Storage::fetch
-     * @covers  Freezer\Storage\CouchDB::doStore
-     * @covers  Freezer\Storage\CouchDB::doFetch
-     * @depends testStoringAnObjectGraphThatContainsCyclesWorks
-     */
-    public function testStoringAndFetchingAnObjectGraphThatContainsCyclesWorks()
-    {
-        $root                = new \Node;
-        $root->left          = new \Node;
-        $root->right         = new \Node;
-        $root->left->parent  = $root;
-        $root->right->parent = $root;
-
-        $this->storage->store($root);
-
-        $this->assertEquals($root, $this->storage->fetch('a'));
-    }
-
-    /**
-     * @covers  Freezer\Storage::store
-     * @covers  Freezer\Storage::fetch
-     * @covers  Freezer\Storage::fetchArray
-     * @covers  Freezer\Storage\CouchDB::doStore
-     * @covers  Freezer\Storage\CouchDB::doFetch
-     * @depends testStoringAndFetchingAnObjectGraphThatContainsCyclesWorks
-     */
-    public function testStoringAndFetchingAnObjectGraphThatContainsCyclesWorks2()
-    {
-        $root   = new \Node2('a');
-        $left   = new \Node2('b', $root);
-        $parent = new \Node2('c', $root);
-
-        $this->storage->store($root);
-
-        $this->assertEquals($root, $this->storage->fetch('a'));
+        $this->assertEquals($expected->a, $actual->a);
     }
 
     /**
