@@ -73,24 +73,16 @@ class CouchDB extends Storage
 
         foreach ($frozenObject['objects'] as $id => $object) {
             if ($object['isDirty'] !== false || $checkForDirt === false) {
-                $doc = array(
+                $payload['docs'][] = array(
                     '_id'   => $id,
                     'class' => $object['class'],
                     'state' => $object['state']
                 );
-
-                parse_str($object['state']['__freezer'], $__freezer);
-
-                if (isset($__freezer['_rev'])) {
-                    $doc['_rev'] = $__freezer['_rev'];
-                }
-
-                $payload['docs'][] = $doc;
             }
         }
 
         if (!empty($payload['docs'])) {
-            $response = $this->send(
+            $this->send(
                 'POST',
                 '/' . $this->database . '/_bulk_docs',
                 json_encode($payload)
@@ -114,7 +106,6 @@ class CouchDB extends Storage
                 return false;
             }
 
-            $object['state']['__freezer'] .= '&_rev=' . $object['_rev'];
             $objects[$id] = array(
               'class'   => $object['class'],
               'isDirty' => false,

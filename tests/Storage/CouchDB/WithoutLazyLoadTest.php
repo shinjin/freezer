@@ -346,13 +346,10 @@ class WithoutLazyLoadTest extends TestCase
      */
     public function testStoringAndFetchingAnObjectWorks()
     {
-        $expected = new \A(1, 2, 3);
-        $this->storage->store($expected);
+        $object = new \A(1, 2, 3);
+        $this->storage->store($object);
 
-        $actual = $this->storage->fetch('a');
-        unset($actual->__freezer['_rev']);
-
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($object, $this->storage->fetch('a'));
     }
 
     /**
@@ -360,21 +357,85 @@ class WithoutLazyLoadTest extends TestCase
      * @covers  Freezer\Storage::fetch
      * @covers  Freezer\Storage\CouchDB::doStore
      * @covers  Freezer\Storage\CouchDB::doFetch
-     * @covers  Freezer\Storage\CouchDB::send
-     * @depends testStoringAnObjectWorks
+     * @depends testStoringAnObjectThatAggregatesOtherObjectsWorks
      */
-    public function testStoringAndFetchingAndUpdatingAnObjectWorks()
+    public function testStoringAndFetchingAnObjectThatAggregatesOtherObjectsWorks()
     {
-        $object = new \A(1, 2, 3);
+        $object = new \C;
         $this->storage->store($object);
 
-        $expected = $this->storage->fetch('a');
-        $expected->a = null;
-        $this->storage->store($expected);
+        $this->assertEquals($object, $this->storage->fetch('a'));
+    }
 
-        $actual = $this->storage->fetch('a');
+    /**
+     * @covers  Freezer\Storage::store
+     * @covers  Freezer\Storage::fetch
+     * @covers  Freezer\Storage::fetchArray
+     * @covers  Freezer\Storage\CouchDB::doStore
+     * @covers  Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAnObjectThatAggregatesOtherObjectsInAnArrayWorks
+     */
+    public function testStoringAndFetchingAnObjectThatAggregatesOtherObjectsInAnArrayWorks()
+    {
+        $object = new \D;
+        $this->storage->store($object);
 
-        $this->assertEquals($expected->a, $actual->a);
+        $this->assertEquals($object, $this->storage->fetch('a'));
+    }
+
+    /**
+     * @covers  Freezer\Storage::store
+     * @covers  Freezer\Storage::fetch
+     * @covers  Freezer\Storage::fetchArray
+     * @covers  Freezer\Storage\CouchDB::doStore
+     * @covers  Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAnObjectThatAggregatesOtherObjectsInANestedArrayWorks
+     */
+    public function testStoringAndFetchingAnObjectThatAggregatesOtherObjectsInANestedArrayWorks()
+    {
+        $object = new \E;
+        $this->storage->store($object);
+
+        $this->assertEquals($object, $this->storage->fetch('a'));
+    }
+
+    /**
+     * @covers  Freezer\Storage::store
+     * @covers  Freezer\Storage::fetch
+     * @covers  Freezer\Storage\CouchDB::doStore
+     * @covers  Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAnObjectGraphThatContainsCyclesWorks
+     */
+    public function testStoringAndFetchingAnObjectGraphThatContainsCyclesWorks()
+    {
+        $root                = new \Node;
+        $root->left          = new \Node;
+        $root->right         = new \Node;
+        $root->left->parent  = $root;
+        $root->right->parent = $root;
+
+        $this->storage->store($root);
+
+        $this->assertEquals($root, $this->storage->fetch('a'));
+    }
+
+    /**
+     * @covers  Freezer\Storage::store
+     * @covers  Freezer\Storage::fetch
+     * @covers  Freezer\Storage::fetchArray
+     * @covers  Freezer\Storage\CouchDB::doStore
+     * @covers  Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAndFetchingAnObjectGraphThatContainsCyclesWorks
+     */
+    public function testStoringAndFetchingAnObjectGraphThatContainsCyclesWorks2()
+    {
+        $root   = new \Node2('a');
+        $left   = new \Node2('b', $root);
+        $parent = new \Node2('c', $root);
+
+        $this->storage->store($root);
+
+        $this->assertEquals($root, $this->storage->fetch('a'));
     }
 
     /**
