@@ -349,7 +349,29 @@ class WithoutLazyLoadTest extends TestCase
         $object = new \A(1, 2, 3);
         $this->storage->store($object);
 
-        $this->assertEquals($object, $this->storage->fetch('a'));
+        $this->assertEquals($object, $this->removeRev($this->storage->fetch('a')));
+    }
+
+    /**
+     * @covers  Freezer\Storage::store
+     * @covers  Freezer\Storage::fetch
+     * @covers  Freezer\Storage\CouchDB::doStore
+     * @covers  Freezer\Storage\CouchDB::doFetch
+     * @covers  Freezer\Storage\CouchDB::send
+     * @depends testStoringAnObjectWorks
+     */
+    public function testStoringAndFetchingAndUpdateAnObjectWorks()
+    {
+        $object = new \A(1, 2, 3);
+        $this->storage->store($object);
+
+        $expected = $this->storage->fetch('a');
+        $expected->a = null;
+        $this->storage->store($expected);        
+
+        $actual = $this->storage->fetch('a');
+
+        $this->assertEquals($expected->a, $actual->a);
     }
 
     /**
@@ -364,7 +386,7 @@ class WithoutLazyLoadTest extends TestCase
         $object = new \C;
         $this->storage->store($object);
 
-        $this->assertEquals($object, $this->storage->fetch('a'));
+        $this->assertEquals($object, $this->removeRev($this->storage->fetch('a')));
     }
 
     /**
@@ -380,7 +402,7 @@ class WithoutLazyLoadTest extends TestCase
         $object = new \D;
         $this->storage->store($object);
 
-        $this->assertEquals($object, $this->storage->fetch('a'));
+        $this->assertEquals($object, $this->removeRev($this->storage->fetch('a')));
     }
 
     /**
@@ -396,7 +418,7 @@ class WithoutLazyLoadTest extends TestCase
         $object = new \E;
         $this->storage->store($object);
 
-        $this->assertEquals($object, $this->storage->fetch('a'));
+        $this->assertEquals($object, $this->removeRev($this->storage->fetch('a')));
     }
 
     /**
@@ -416,7 +438,7 @@ class WithoutLazyLoadTest extends TestCase
 
         $this->storage->store($root);
 
-        $this->assertEquals($root, $this->storage->fetch('a'));
+        $this->assertEquals($root, $this->removeRev($this->storage->fetch('a')));
     }
 
     /**
@@ -435,7 +457,7 @@ class WithoutLazyLoadTest extends TestCase
 
         $this->storage->store($root);
 
-        $this->assertEquals($root, $this->storage->fetch('a'));
+        $this->assertEquals($root, $this->removeRev($this->storage->fetch('a')));
     }
 
     /**
@@ -500,5 +522,28 @@ class WithoutLazyLoadTest extends TestCase
         );
 
         $storage->send('PUT', '/test');
+    }
+
+    private function removeRev($object) {
+        unset($object->__freezer['_rev']);
+
+        foreach(get_object_vars($object) as $prop) {
+            if (is_object($prop) && isset($prop->__freezer['_rev'])) {
+                $this->removeRev($prop);
+            } elseif(is_array($prop)) {
+                $array = function($prop) use (&$array) {
+                    foreach($prop as $val) {
+                        if (is_object($val) && isset($val->__freezer['_rev'])) {
+                            $this->removeRev($val);
+                        } elseif (is_array($val)) {
+                            $array($val);
+                        }
+                    }
+                };
+                $array($prop);
+            }
+        }
+
+        return $object;
     }
 }
