@@ -87,10 +87,10 @@ class Pdo extends Storage
         $isRoot = empty($objects);
 
         if (!isset($objects[$id])) {
-            $query = sprintf('SELECT * FROM %s WHERE id = ?', $this->table);
-            $sth = $this->db->query($query, array($id));
+            $stmt = sprintf('SELECT * FROM %s WHERE id = ?', $this->table);
+            $stmt = $this->db->query($stmt, array($id));
 
-            if (($result = $sth->fetch()) !== false) {
+            if (($result = $stmt->fetch()) !== false) {
                 $object = json_decode($result['body'], true);
             } else {
                 return false;
