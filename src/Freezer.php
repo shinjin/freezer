@@ -57,6 +57,10 @@ class Freezer
             $object->{$this->idAttribute} = $this->generateId();
         }
 
+        if (!isset($object->__freezer)) {
+            $object->__freezer = array('hash' => null);
+        }
+
         $isDirty = $this->isDirty($object, true);
         $uuid    = $object->{$this->idAttribute};
 
@@ -70,7 +74,9 @@ class Freezer
             // Iterate over the attributes of the object.
             foreach ($this->readAttributes($object) as $k => $v) {
                 if ($k !== $this->idAttribute) {
-                    if (is_array($v)) {
+                    if ($k === '__freezer') {
+                        $v = http_build_query($v);
+                    } elseif (is_array($v)) {
                         $this->freezeArray($v, $objects);
                     } elseif (is_object($v) &&
                               !in_array(get_class($object), $this->blacklist)) {
@@ -165,9 +171,10 @@ class Freezer
             // Store UUID.
             $objects[$root]->{$this->idAttribute} = $root;
 
-            // Store hash.
-            if (isset($state['__freezer_hash'])) {
-                $objects[$root]->__freezer_hash = $state['__freezer_hash'];
+            // Store __freezer.
+            if (isset($state['__freezer'])) {
+                parse_str($state['__freezer'], $__freezer);
+                $objects[$root]->__freezer = $__freezer;
             }
         }
 
@@ -291,8 +298,8 @@ class Freezer
         $attributes = $this->readAttributes($object);
         ksort($attributes);
 
-        if (isset($attributes['__freezer_hash'])) {
-            unset($attributes['__freezer_hash']);
+        if (isset($attributes['__freezer'])) {
+            unset($attributes['__freezer']);
         }
 
         foreach ($attributes as $key => $value) {
@@ -353,13 +360,13 @@ class Freezer
         $isDirty = true;
         $hash    = $this->generateHash($object);
 
-        if (isset($object->__freezer_hash) &&
-            $object->__freezer_hash == $hash) {
+        if (isset($object->__freezer['hash']) &&
+            $object->__freezer['hash'] === $hash) {
             $isDirty = false;
         }
 
         if ($isDirty && $rehash) {
-            $object->__freezer_hash = $hash;
+            $object->__freezer['hash'] = $hash;
         }
 
         return $isDirty;

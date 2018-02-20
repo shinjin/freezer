@@ -75,7 +75,7 @@ class ChainStorageTest extends \PHPUnit\Framework\TestCase
                     'a'              => 1,
                     'b'              => 2,
                     'c'              => 3,
-                    '__freezer_hash' => '3c0bd64e7f7143b457b51423b7f172f7172ef424'
+                    '__freezer' => 'hash=3c0bd64e7f7143b457b51423b7f172f7172ef424'
                 )
             ),
             $this->cache->fetch('a')
@@ -98,7 +98,7 @@ class ChainStorageTest extends \PHPUnit\Framework\TestCase
                 'a'              => 1,
                 'b'              => 2,
                 'c'              => 3,
-                '__freezer_hash' => '3c0bd64e7f7143b457b51423b7f172f7172ef424'
+                '__freezer' => 'hash=3c0bd64e7f7143b457b51423b7f172f7172ef424'
             )
         );
 

@@ -111,7 +111,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'a'                         => 1,
                   'b'                         => 2,
                   'c'                         => 3,
-                  '__freezer_hash' => '3c0bd64e7f7143b457b51423b7f172f7172ef424'
+                  '__freezer' => 'hash=3c0bd64e7f7143b457b51423b7f172f7172ef424'
                 )
               )
             )
@@ -138,7 +138,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'f' => 'f',
                   'a' => 'a',
                   'b' => 'b',
-                  '__freezer_hash' => '78e22e75eb22e8ca26127a89c156365b9a1e9a6e',
+                  '__freezer' => 'hash=78e22e75eb22e8ca26127a89c156365b9a1e9a6e',
                 )
               )
             )
@@ -161,7 +161,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                 'isDirty'   => true,
                 'state'     => array(
                   'file'                      => null,
-                  '__freezer_hash' => 'e57d9e232b4f1691aceeea16e1099728b7c03830'
+                  '__freezer' => 'hash=e57d9e232b4f1691aceeea16e1099728b7c03830'
                 )
               )
             )
@@ -185,7 +185,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                 'isDirty'   => true,
                 'state' => array(
                   'b'                         => '__freezer_b',
-                  '__freezer_hash' => '9a7b11d8709331ee16304d3c2c7c72fc4730f7c4'
+                  '__freezer' => 'hash=9a7b11d8709331ee16304d3c2c7c72fc4730f7c4'
                 )
               ),
               'b' => array(
@@ -193,7 +193,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                 'isDirty'   => true,
                 'state' => array(
                   'a'                         => '__freezer_c',
-                  '__freezer_hash' => '1404f057855305a1f5734b8c31f417d460285c42'
+                  '__freezer' => 'hash=1404f057855305a1f5734b8c31f417d460285c42'
                 )
               ),
               'c' => array(
@@ -203,7 +203,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'a'                         => 1,
                   'b'                         => 2,
                   'c'                         => 3,
-                  '__freezer_hash' => '6f4ea6504fb30823218623e66cb47fff64373926'
+                  '__freezer' => 'hash=6f4ea6504fb30823218623e66cb47fff64373926'
                 )
               )
             )
@@ -230,7 +230,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'array' => array(
                     0 => '__freezer_b'
                   ),
-                  '__freezer_hash' => '94d21ff37706a2c2095a95262f73d45c2f0a32f4'
+                  '__freezer' => 'hash=94d21ff37706a2c2095a95262f73d45c2f0a32f4'
                 )
               ),
               'b' => array(
@@ -240,7 +240,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'a'                         => 1,
                   'b'                         => 2,
                   'c'                         => 3,
-                  '__freezer_hash' => '767101a9414bac28c076e39e1dc3eb5403cf0534'
+                  '__freezer' => 'hash=767101a9414bac28c076e39e1dc3eb5403cf0534'
                 )
               )
             )
@@ -269,7 +269,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                       0 => '__freezer_b'
                     )
                   ),
-                  '__freezer_hash' => 'fc93dde8215b082590100d32e7b26dc188ce0815'
+                  '__freezer' => 'hash=fc93dde8215b082590100d32e7b26dc188ce0815'
                 ),
               ),
               'b' => array(
@@ -279,7 +279,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'a' => 1,
                   'b' => 2,
                   'c' => 3,
-                  '__freezer_hash' => '767101a9414bac28c076e39e1dc3eb5403cf0534'
+                  '__freezer' => 'hash=767101a9414bac28c076e39e1dc3eb5403cf0534'
                 )
               )
             )
@@ -312,7 +312,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'left'                      => '__freezer_b',
                   'right'                     => '__freezer_c',
                   'payload'                   => null,
-                  '__freezer_hash' => '0b78e0ce8a31baa6174474e2e84256eb06acafca'
+                  '__freezer' => 'hash=0b78e0ce8a31baa6174474e2e84256eb06acafca'
                 )
               ),
               'b' => 
@@ -324,7 +324,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'left'                      => null,
                   'right'                     => null,
                   'payload'                   => null,
-                  '__freezer_hash' => '4c138823f68eaeada0d122ed08354cb776022703'
+                  '__freezer' => 'hash=4c138823f68eaeada0d122ed08354cb776022703'
                 )
               ),
               'c' => array(
@@ -335,7 +335,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'left'                      => null,
                   'right'                     => null,
                   'payload'                   => null,
-                  '__freezer_hash' => 'e168d40c488fd27ecadfb3a5efa34ca2a10c6400'
+                  '__freezer' => 'hash=e168d40c488fd27ecadfb3a5efa34ca2a10c6400'
                 )
               )
             )
@@ -369,7 +369,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                     1 => '__freezer_c'
                   ),
                   'payload'                   => 'a',
-                  '__freezer_hash' => 'e72fff28068b932cc1cbf7cd3ee19438145a2db2'
+                  '__freezer' => 'hash=e72fff28068b932cc1cbf7cd3ee19438145a2db2'
                 )
               ),
               'b' => array(
@@ -379,7 +379,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'parent'   => '__freezer_a',
                   'children' => array(),
                   'payload'                   => 'b',
-                  '__freezer_hash' => '7d784d361c301e8f9ea58e75d2288d2c8563ce24'
+                  '__freezer' => 'hash=7d784d361c301e8f9ea58e75d2288d2c8563ce24'
                 )
               ),
               'c' => array(
@@ -389,7 +389,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
                   'parent'   => '__freezer_a',
                   'children' => array(),
                   'payload'                   => 'c',
-                  '__freezer_hash' => '6763b776a62bebae3da18961bb42b22dba7ce441'
+                  '__freezer' => 'hash=6763b776a62bebae3da18961bb42b22dba7ce441'
                 )
               )
             )
@@ -643,7 +643,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     public function testHashedObjectCanBeHashed()
     {
         $object = new \A(1, 2, 3);
-        $object->__freezer_hash = '1a66b04455fbcb456fca201730e8b9fb1336d2e7';
+        $object->__freezer['hash'] = '1a66b04455fbcb456fca201730e8b9fb1336d2e7';
 
         $this->assertEquals(
           '1a66b04455fbcb456fca201730e8b9fb1336d2e7',
@@ -761,7 +761,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     public function testNonDirtyObjectIsRecognizedAsNotBeingDirty()
     {
         $object = new \A(1, 2, 3);
-        $object->__freezer_hash = '1a66b04455fbcb456fca201730e8b9fb1336d2e7';
+        $object->__freezer['hash'] = '1a66b04455fbcb456fca201730e8b9fb1336d2e7';
 
         $this->assertFalse($this->freezer->isDirty($object));
     }
@@ -772,7 +772,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     public function testDirtyObjectIsRecognizedAsBeingDirty()
     {
         $object = new \A(3, 2, 1);
-        $object->__freezer_hash = 'a6efdb77cb879e26cf30635156cf045a7e7f9564';
+        $object->__freezer['hash'] = 'a6efdb77cb879e26cf30635156cf045a7e7f9564';
 
         $this->assertTrue($this->freezer->isDirty($object));
     }
@@ -793,7 +793,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     public function testDirtyObjectIsRecognizedAsBeingDirty3()
     {
         $object = new \A(3, 2, 1);
-        $object->__freezer_hash = 'a6efdb77cb879e26cf30635156cf045a7e7f9564';
+        $object->__freezer['hash'] = 'a6efdb77cb879e26cf30635156cf045a7e7f9564';
 
         $this->assertTrue($this->freezer->isDirty($object, true));
         $this->assertFalse($this->freezer->isDirty($object));
