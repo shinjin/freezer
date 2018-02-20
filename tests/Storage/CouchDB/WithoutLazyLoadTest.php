@@ -360,14 +360,14 @@ class WithoutLazyLoadTest extends TestCase
      * @covers  Freezer\Storage\CouchDB::send
      * @depends testStoringAnObjectWorks
      */
-    public function testStoringAndFetchingAndUpdateAnObjectWorks()
+    public function testStoringAndFetchingAndUpdatingAnObjectWorks()
     {
         $object = new \A(1, 2, 3);
         $this->storage->store($object);
 
         $expected = $this->storage->fetch('a');
         $expected->a = null;
-        $this->storage->store($expected);        
+        $this->storage->store($expected);
 
         $actual = $this->storage->fetch('a');
 

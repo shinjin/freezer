@@ -340,6 +340,27 @@ class PdoTest extends \PHPUnit\Framework\TestCase
      * @covers  Freezer\Storage::fetch
      * @covers  Freezer\Storage\Pdo::doStore
      * @covers  Freezer\Storage\Pdo::doFetch
+     * @depends testStoringAnObjectWorks
+     */
+    public function testStoringAndFetchingAndUpdatingAnObjectWorks()
+    {
+        $object = new \A(1, 2, 3);
+        $this->storage->store($object);
+
+        $expected = $this->storage->fetch('a');
+        $expected->a = null;
+        $this->storage->store($expected);
+
+        $actual = $this->storage->fetch('a');
+
+        $this->assertEquals($expected->a, $actual->a);
+    }
+
+    /**
+     * @covers  Freezer\Storage::store
+     * @covers  Freezer\Storage::fetch
+     * @covers  Freezer\Storage\Pdo::doStore
+     * @covers  Freezer\Storage\Pdo::doFetch
      * @depends testStoringAnObjectThatAggregatesOtherObjectsWorks
      */
     public function testStoringAndFetchingAnObjectThatAggregatesOtherObjectsWorks()
