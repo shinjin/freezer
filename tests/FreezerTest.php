@@ -847,8 +847,8 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAttributeFilterFiltersResults()
     {
-        $this->freezer->setAttributeFilter(function($attribute){
-          if ($attribute->getName() === 'a') {
+        $this->freezer->setAttributeFilter(function($name, $value){
+          if ($name === 'a') {
             return false;
           }
           return true;
