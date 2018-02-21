@@ -592,8 +592,8 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
      * @covers Freezer\Freezer::__construct
      * @covers Freezer\Freezer::setIdAttribute
      * @covers Freezer\Freezer::getIdAttribute
-     * @covers Freezer\Freezer::setBlacklist
-     * @covers Freezer\Freezer::getBlacklist
+     * @covers Freezer\Freezer::setAttributeFilter
+     * @covers Freezer\Freezer::getAttributeFilter
      * @covers Freezer\Freezer::setUseAutoload
      * @covers Freezer\Freezer::getUseAutoload
      */
@@ -602,7 +602,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
         $freezer = new Freezer;
 
         $this->assertSame('__freezer_uuid', $freezer->getIdAttribute());
-        $this->assertSame(array(), $freezer->getBlacklist());
+        $this->assertNull($freezer->getAttributeFilter());
         $this->assertTrue($freezer->getUseAutoload());
     }
 
@@ -837,6 +837,26 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
           array('a' => new \A(1, 2, 3)),
           $this->freezer->readAttributes(new \B)
+        );
+    }
+
+    /**
+     * @covers  Freezer\Freezer::readAttributes
+     * @covers  Freezer\Freezer::setAttributeFilter
+     * @depends testAttributesOfAnObjectCanBeRead
+     */
+    public function testAttributeFilterFiltersResults()
+    {
+        $this->freezer->setAttributeFilter(function($name, $value){
+          if ($name === 'a') {
+            return false;
+          }
+          return true;
+        });
+
+        $this->assertEquals(
+          array('b' => 2, 'c' => 3),
+          $this->freezer->readAttributes(new \A(1, 2, 3))
         );
     }
 

@@ -13,7 +13,7 @@ class Freezer
     /**
      * @var array
      */
-    private $blacklist;
+    private $attributeFilter;
 
     /**
      * @var boolean
@@ -23,17 +23,18 @@ class Freezer
     /**
      * Constructor.
      *
-     * @param  array                    $blacklist
+     * @param  string                   $idAttribute
+     * @param  callable                 $attributeFilter
      * @param  boolean                  $useAutoload
      * @throws InvalidArgumentException
      */
     public function __construct(
         $idAttribute = '__freezer_uuid',
-        array $blacklist = array(),
+        $attributeFilter = null,
         $useAutoload = true
     ){
         $this->setIdAttribute($idAttribute);
-        $this->setBlacklist($blacklist);
+        $this->setAttributeFilter($attributeFilter);
         $this->setUseAutoload($useAutoload);
     }
 
@@ -78,8 +79,7 @@ class Freezer
                         $v = json_encode($v);
                     } elseif (is_array($v)) {
                         $this->freezeArray($v, $objects);
-                    } elseif (is_object($v) &&
-                              !in_array(get_class($object), $this->blacklist)) {
+                    } elseif (is_object($v)) {
                         // Freeze the aggregated object.
                         $this->freeze($v, $objects);
 
@@ -232,25 +232,25 @@ class Freezer
     }
 
     /**
-     * Returns the blacklist of class names for which aggregates objects are
-     * not frozen.
+     * Returns the callable to filter attributes that are added to the object
+     * state.
      *
      * @return array
      */
-    public function getBlacklist()
+    public function getAttributeFilter()
     {
-        return $this->blacklist;
+        return $this->attributeFilter;
     }
 
     /**
-     * Sets the blacklist of class names for which aggregates objects are
-     * not frozen.
+     * Sets the callable to filter attributes that are added to the object
+     * state.
      *
-     * @param  array $blacklist
+     * @param array $attributeFilter
      */
-    public function setBlacklist(array $blacklist)
+    public function setAttributeFilter($attributeFilter)
     {
-        $this->blacklist = $blacklist;
+        $this->attributeFilter = $attributeFilter;
     }
 
     /**
@@ -379,7 +379,7 @@ class Freezer
      * @return array
      * @throws InvalidArgumentException
      */
-    public static function readAttributes($object)
+    public function readAttributes($object)
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException(1, 'object');
@@ -391,7 +391,13 @@ class Freezer
         // Iterate over the attributes of the object.
         foreach ($reflector->getProperties() as $attribute) {
             $attribute->setAccessible(true);
-            $result[$attribute->getName()] = $attribute->getValue($object);
+            $name  = $attribute->getName();
+            $value = $attribute->getValue($object);
+
+            if (!is_callable($this->attributeFilter) ||
+                $this->attributeFilter->__invoke($name, $value)) {
+                $result[$name] = $value;
+            }
         }
 
         return $result;
