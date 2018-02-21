@@ -59,7 +59,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'a'              => 1,
               'b'              => 2,
               'c'              => 3,
-              '__freezer' => 'hash=3c0bd64e7f7143b457b51423b7f172f7172ef424'
+              '__freezer' => '{"hash":"3c0bd64e7f7143b457b51423b7f172f7172ef424"}'
             )
           ),
           $this->getFrozenObjectFromStorage('a')
@@ -80,7 +80,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
             'class' => 'C',
             'state' => array(
               'b'              => '__freezer_b',
-              '__freezer' => 'hash=9a7b11d8709331ee16304d3c2c7c72fc4730f7c4'
+              '__freezer' => '{"hash":"9a7b11d8709331ee16304d3c2c7c72fc4730f7c4"}'
             )
           ),
           $this->getFrozenObjectFromStorage('a')
@@ -91,7 +91,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
             'class' => 'B',
             'state' => array(
               'a'              => '__freezer_c',
-              '__freezer' => 'hash=1404f057855305a1f5734b8c31f417d460285c42'
+              '__freezer' => '{"hash":"1404f057855305a1f5734b8c31f417d460285c42"}'
             )
           ),
           $this->getFrozenObjectFromStorage('b')
@@ -104,7 +104,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'a'              => 1,
               'b'              => 2,
               'c'              => 3,
-              '__freezer' => 'hash=6f4ea6504fb30823218623e66cb47fff64373926'
+              '__freezer' => '{"hash":"6f4ea6504fb30823218623e66cb47fff64373926"}'
             )
           ),
           $this->getFrozenObjectFromStorage('c')
@@ -127,7 +127,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'array' => array(
                 0     => '__freezer_b'
               ),
-              '__freezer' => 'hash=94d21ff37706a2c2095a95262f73d45c2f0a32f4'
+              '__freezer' => '{"hash":"94d21ff37706a2c2095a95262f73d45c2f0a32f4"}'
             )
           ),
           $this->getFrozenObjectFromStorage('a')
@@ -140,7 +140,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'a'              => 1,
               'b'              => 2,
               'c'              => 3,
-              '__freezer' => 'hash=767101a9414bac28c076e39e1dc3eb5403cf0534'
+              '__freezer' => '{"hash":"767101a9414bac28c076e39e1dc3eb5403cf0534"}'
             )
           ),
           $this->getFrozenObjectFromStorage('b')
@@ -165,7 +165,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
                   0 => '__freezer_b'
                 )
               ),
-              '__freezer' => 'hash=fc93dde8215b082590100d32e7b26dc188ce0815'
+              '__freezer' => '{"hash":"fc93dde8215b082590100d32e7b26dc188ce0815"}'
             )
           ),
           $this->getFrozenObjectFromStorage('a')
@@ -178,7 +178,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'a'              => 1,
               'b'              => 2,
               'c'              => 3,
-              '__freezer' => 'hash=767101a9414bac28c076e39e1dc3eb5403cf0534'
+              '__freezer' => '{"hash":"767101a9414bac28c076e39e1dc3eb5403cf0534"}'
             )
           ),
           $this->getFrozenObjectFromStorage('b')
@@ -208,7 +208,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'left'           => '__freezer_b',
               'right'          => '__freezer_c',
               'payload'        => null,
-              '__freezer' => 'hash=0b78e0ce8a31baa6174474e2e84256eb06acafca'
+              '__freezer' => '{"hash":"0b78e0ce8a31baa6174474e2e84256eb06acafca"}'
             )
           ),
           $this->getFrozenObjectFromStorage('a')
@@ -222,7 +222,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'left'           => null,
               'right'          => null,
               'payload'        => null,
-              '__freezer' => 'hash=4c138823f68eaeada0d122ed08354cb776022703'
+              '__freezer' => '{"hash":"4c138823f68eaeada0d122ed08354cb776022703"}'
             )
           ),
           $this->getFrozenObjectFromStorage('b')
@@ -236,7 +236,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'left'           => null,
               'right'          => null,
               'payload'        => null,
-              '__freezer' => 'hash=e168d40c488fd27ecadfb3a5efa34ca2a10c6400'
+              '__freezer' => '{"hash":"e168d40c488fd27ecadfb3a5efa34ca2a10c6400"}'
             )
           ),
           $this->getFrozenObjectFromStorage('c')
@@ -266,7 +266,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
                 1 => '__freezer_c'
               ),
               'payload'                   => 'a',
-              '__freezer' => 'hash=e72fff28068b932cc1cbf7cd3ee19438145a2db2'
+              '__freezer' => '{"hash":"e72fff28068b932cc1cbf7cd3ee19438145a2db2"}'
             )
           ),
           $this->getFrozenObjectFromStorage('a')
@@ -279,7 +279,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'parent'         => '__freezer_a',
               'children'       => array(),
               'payload'        => 'b',
-              '__freezer' => 'hash=7d784d361c301e8f9ea58e75d2288d2c8563ce24'
+              '__freezer' => '{"hash":"7d784d361c301e8f9ea58e75d2288d2c8563ce24"}'
             )
           ),
           $this->getFrozenObjectFromStorage('b')
@@ -292,7 +292,7 @@ class DoctrineCacheTest extends \PHPUnit\Framework\TestCase
               'parent'         => '__freezer_a',
               'children'       => array(),
               'payload'        => 'c',
-              '__freezer' => 'hash=6763b776a62bebae3da18961bb42b22dba7ce441'
+              '__freezer' => '{"hash":"6763b776a62bebae3da18961bb42b22dba7ce441"}'
             )
           ),
           $this->getFrozenObjectFromStorage('c')

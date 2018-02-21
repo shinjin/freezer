@@ -75,7 +75,7 @@ class Freezer
             foreach ($this->readAttributes($object) as $k => $v) {
                 if ($k !== $this->idAttribute) {
                     if ($k === '__freezer') {
-                        $v = http_build_query($v);
+                        $v = json_encode($v);
                     } elseif (is_array($v)) {
                         $this->freezeArray($v, $objects);
                     } elseif (is_object($v) &&
@@ -173,8 +173,7 @@ class Freezer
 
             // Store __freezer.
             if (isset($state['__freezer'])) {
-                parse_str($state['__freezer'], $__freezer);
-                $objects[$root]->__freezer = $__freezer;
+                $objects[$root]->__freezer = json_decode($state['__freezer'], true);
             }
         }
 
@@ -338,9 +337,9 @@ class Freezer
     /**
      * Checks whether an object is dirty, ie. if its SHA1 hash is still valid.
      *
-     * Returns true when the object's __freezer_hash attribute is no longer
+     * Returns true when the object's __freezer['hash'] value is no longer
      * valid or does not exist.
-     * Returns false when the object's __freezer_hash attribute is still valid.
+     * Returns false when the object's __freezer['hash'] value is still valid.
      *
      * @param  object  $object The object that is to be checked.
      * @param  boolean $rehash Whether or not to rehash dirty objects.

@@ -79,7 +79,7 @@ class CouchDB extends Storage
                     'state' => $object['state']
                 );
 
-                parse_str($object['state']['__freezer'], $__freezer);
+                $__freezer = json_decode($object['state']['__freezer'], true);
 
                 if (isset($__freezer['_rev'])) {
                     $doc['_rev'] = $__freezer['_rev'];
@@ -114,7 +114,12 @@ class CouchDB extends Storage
                 return false;
             }
 
-            $object['state']['__freezer'] .= '&_rev=' .  $object['_rev'];
+            $object['state']['__freezer'] = sprintf(
+                '%s,"_rev":"%s"}',
+                rtrim($object['state']['__freezer'], '}'),
+                $object['_rev']
+            );
+
             $objects[$id] = array(
               'class'   => $object['class'],
               'isDirty' => false,
