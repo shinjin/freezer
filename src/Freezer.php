@@ -391,12 +391,10 @@ class Freezer
         // Iterate over the attributes of the object.
         foreach ($reflector->getProperties() as $attribute) {
             $attribute->setAccessible(true);
-            $name  = $attribute->getName();
-            $value = $attribute->getValue($object);
 
             if (!is_callable($this->attributeFilter) ||
-                $this->attributeFilter->__invoke($name, $value)) {
-                $result[$name] = $value;
+                $this->attributeFilter->__invoke($attribute)) {
+                $result[$attribute->getName()] = $attribute->getValue($object);
             }
         }
 
