@@ -121,7 +121,7 @@ abstract class Storage
      *
      * @param array $frozenObject
      */
-    abstract protected function doStore(array $frozenObject, $checkForDirt = true);
+    abstract protected function doStore(array $frozenObject);
 
     /**
      * Fetches a frozen object from the object storage and thaws it.

@@ -33,7 +33,7 @@ class ChainStorage extends Storage
     /**
      * @inheritdoc
      */
-    protected function doStore(array $frozenObject, $checkForDirt = true)
+    protected function doStore(array $frozenObject)
     {
         $stored = true;
 
@@ -59,10 +59,14 @@ class ChainStorage extends Storage
             $frozenObject = $storage->doFetch($id, $objects);
 
             if ($frozenObject !== false) {
+                $isDirty = &$frozenObject['objects'][$id]['isDirty'];
+                $isDirty = true;
+
                 for ($subKey = $key - 1; $subKey >= 0; $subKey--) {
-                    $this->storageChain[$subKey]->doStore($frozenObject, false);
+                    $this->storageChain[$subKey]->doStore($frozenObject);
                 }
 
+                $isDirty = false;
                 return $frozenObject;
             }
         }

@@ -53,13 +53,13 @@ class Pdo extends Storage
     /**
      * @inheritdoc
      */
-    protected function doStore(array $frozenObject, $checkForDirt = true)
+    protected function doStore(array $frozenObject)
     {
         $stmt1 = sprintf('UPDATE %s SET body = ? WHERE id = ?', $this->table);
         $stmt2 = sprintf('INSERT INTO %s (id,body) VALUES (?,?)', $this->table);
 
         foreach ($frozenObject['objects'] as $id => $object) {
-            if ($object['isDirty'] !== false || $checkForDirt === false) {
+            if ($object['isDirty'] === true) {
                 $payload = array(
                     'class' => $object['class'],
                     'state' => $object['state']

@@ -67,12 +67,12 @@ class CouchDB extends Storage
     /**
      * @inheritdoc
      */
-    protected function doStore(array $frozenObject, $checkForDirt = true)
+    protected function doStore(array $frozenObject)
     {
         $payload = array('docs' => array());
 
         foreach ($frozenObject['objects'] as $id => $object) {
-            if ($object['isDirty'] !== false || $checkForDirt === false) {
+            if ($object['isDirty'] === true) {
                 $doc = array(
                     '_id'   => $id,
                     'class' => $object['class'],

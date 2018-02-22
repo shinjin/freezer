@@ -33,10 +33,10 @@ class DoctrineCache extends Storage
     /**
      * @inheritdoc
      */
-    protected function doStore(array $frozenObject, $checkForDirt = true)
+    protected function doStore(array $frozenObject)
     {
         foreach ($frozenObject['objects'] as $id => $object) {
-            if ($object['isDirty'] !== false || $checkForDirt === false) {
+            if ($object['isDirty'] === true) {
                 $payload = array(
                     'class' => $object['class'],
                     'state' => $object['state']
