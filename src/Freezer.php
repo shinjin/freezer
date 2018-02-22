@@ -67,7 +67,7 @@ class Freezer
         }
 
         $isDirty = $this->isDirty($object, true);
-        $uuid    = $object->{$this->idAttribute};
+        $uuid    = (string)$object->{$this->idAttribute};
 
         if (!isset($objects[$uuid])) {
             $objects[$uuid] = array(
@@ -88,7 +88,7 @@ class Freezer
                         $this->freeze($v, $objects);
 
                         // Replace $v with the aggregated object's UUID.
-                        $v = '__freezer_' . $v->{$this->idAttribute};
+                        $v = '__freezer_' . (string)$v->{$this->idAttribute};
                     } elseif (is_resource($v)) {
                         $v = null;
                     }
@@ -313,7 +313,7 @@ class Freezer
                     $value->{$this->idAttribute} = $this->generateId();
                 }
 
-                $attributes[$key] = $value->{$this->idAttribute};
+                $attributes[$key] = (string)$value->{$this->idAttribute};
             } elseif (is_resource($value)) {
                 $attributes[$key] = null;
             }
