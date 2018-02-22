@@ -11,9 +11,9 @@ class Freezer
     private $idAttribute;
 
     /**
-     * @var array
+     * @var callable
      */
-    private $attributeFilter;
+    private $attributeReader;
 
     /**
      * @var boolean
@@ -24,17 +24,21 @@ class Freezer
      * Constructor.
      *
      * @param  string                   $idAttribute
-     * @param  callable                 $attributeFilter
+     * @param  callable                 $readAttributes
      * @param  boolean                  $useAutoload
      * @throws InvalidArgumentException
      */
     public function __construct(
         $idAttribute = '__freezer_uuid',
-        $attributeFilter = null,
+        $attributeReader = null,
         $useAutoload = true
     ){
+        if ($attributeReader === null) {
+            $attributeReader = array($this, 'readAttributes');
+        }
+
         $this->setIdAttribute($idAttribute);
-        $this->setAttributeFilter($attributeFilter);
+        $this->setAttributeReader($attributeReader);
         $this->setUseAutoload($useAutoload);
     }
 
@@ -73,7 +77,9 @@ class Freezer
             );
 
             // Iterate over the attributes of the object.
-            foreach ($this->readAttributes($object) as $k => $v) {
+            $attributes = call_user_func($this->attributeReader, $object);
+
+            foreach ($attributes as $k => $v) {
                 if ($k !== $this->idAttribute) {
                     if (is_array($v)) {
                         $this->freezeArray($v, $objects);
@@ -230,25 +236,25 @@ class Freezer
     }
 
     /**
-     * Returns the callable to filter attributes that are added to the object
+     * Returns the callable to iterate over attributes to be added to the object
      * state.
      *
      * @return array
      */
-    public function getAttributeFilter()
+    public function getAttributeReader()
     {
-        return $this->attributeFilter;
+        return $this->attributeReader;
     }
 
     /**
-     * Sets the callable to filter attributes that are added to the object
+     * Sets the callable to iterate over attributes to be added to the object
      * state.
      *
-     * @param array $attributeFilter
+     * @param callable $attributeReader
      */
-    public function setAttributeFilter($attributeFilter)
+    public function setAttributeReader($attributeReader)
     {
-        $this->attributeFilter = $attributeFilter;
+        $this->attributeReader = $attributeReader;
     }
 
     /**
@@ -292,7 +298,7 @@ class Freezer
             throw new InvalidArgumentException(1, 'object');
         }
 
-        $attributes = $this->readAttributes($object);
+        $attributes = call_user_func($this->attributeReader, $object);
         ksort($attributes);
 
         if (isset($attributes['__freezer'])) {
@@ -393,13 +399,7 @@ class Freezer
         // Iterate over the attributes of the object.
         foreach ($reflector->getProperties() as $attribute) {
             $attribute->setAccessible(true);
-            $name  = $attribute->getName();
-            $value = $attribute->getValue($object);
-
-            if (!is_callable($this->attributeFilter) ||
-                $this->attributeFilter->__invoke($name, $value)) {
-                $result[$name] = $value;
-            }
+            $result[$attribute->getName()] = $attribute->getValue($object);
         }
 
         return $result;
