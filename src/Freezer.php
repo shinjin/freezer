@@ -72,12 +72,13 @@ class Freezer
                 'state'   => array()
             );
 
+            $attributes = $this->readAttributes($object);
+            $attributes['__freezer'] = json_encode($attributes['__freezer']);
+
             // Iterate over the attributes of the object.
-            foreach ($this->readAttributes($object) as $k => $v) {
+            foreach ($attributes as $k => $v) {
                 if ($k !== $this->idAttribute) {
-                    if ($k === '__freezer') {
-                        $v = json_encode($v);
-                    } elseif (is_array($v)) {
+                    if (is_array($v)) {
                         $this->freezeArray($v, $objects);
                     } elseif (is_object($v)) {
                         // Freeze the aggregated object.
@@ -357,15 +358,19 @@ class Freezer
         }
 
         $isDirty = true;
-        $hash    = $this->generateHash($object);
 
-        if (isset($object->__freezer['hash']) &&
-            $object->__freezer['hash'] === $hash) {
-            $isDirty = false;
-        }
+        if (isset($object->__freezer)) {
+            $hash = $this->generateHash($object);
+            $__freezer = $object->__freezer;
 
-        if ($isDirty && $rehash) {
-            $object->__freezer['hash'] = $hash;
+            if (isset($__freezer['hash']) && $__freezer['hash'] === $hash) {
+                $isDirty = false;
+            }
+
+            if ($isDirty && $rehash) {
+                $__freezer['hash'] = $hash;
+                $object->__freezer = $__freezer;
+            }
         }
 
         return $isDirty;
