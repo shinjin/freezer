@@ -525,15 +525,15 @@ class WithoutLazyLoadTest extends TestCase
     }
 
     private function removeRev($object) {
-        unset($object->__freezer['_rev']);
+        $object->__freezer = strstr($object->__freezer, '","_rev"', true) . '"}';
 
         foreach(get_object_vars($object) as $prop) {
-            if (is_object($prop) && isset($prop->__freezer['_rev'])) {
+            if (is_object($prop) && strpos($prop->__freezer, '"_rev') !== false) {
                 $this->removeRev($prop);
             } elseif(is_array($prop)) {
                 $array = function($prop) use (&$array) {
                     foreach($prop as $val) {
-                        if (is_object($val) && isset($val->__freezer['_rev'])) {
+                        if (is_object($val)) {
                             $this->removeRev($val);
                         } elseif (is_array($val)) {
                             $array($val);

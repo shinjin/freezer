@@ -59,7 +59,7 @@ class Freezer
         }
 
         if (!isset($object->__freezer)) {
-            $object->__freezer = array('hash' => null);
+            $object->__freezer = '{}';
         }
 
         $isDirty = $this->isDirty($object, true);
@@ -72,11 +72,8 @@ class Freezer
                 'state'   => array()
             );
 
-            $attributes = $this->readAttributes($object);
-            $attributes['__freezer'] = json_encode($attributes['__freezer']);
-
             // Iterate over the attributes of the object.
-            foreach ($attributes as $k => $v) {
+            foreach ($this->readAttributes($object) as $k => $v) {
                 if ($k !== $this->idAttribute) {
                     if (is_array($v)) {
                         $this->freezeArray($v, $objects);
@@ -174,7 +171,7 @@ class Freezer
 
             // Store __freezer.
             if (isset($state['__freezer'])) {
-                $objects[$root]->__freezer = json_decode($state['__freezer'], true);
+                $objects[$root]->__freezer = $state['__freezer'];
             }
         }
 
@@ -361,7 +358,7 @@ class Freezer
 
         if (isset($object->__freezer)) {
             $hash = $this->generateHash($object);
-            $__freezer = $object->__freezer;
+            $__freezer = json_decode($object->__freezer, true);
 
             if (isset($__freezer['hash']) && $__freezer['hash'] === $hash) {
                 $isDirty = false;
@@ -369,7 +366,7 @@ class Freezer
 
             if ($isDirty && $rehash) {
                 $__freezer['hash'] = $hash;
-                $object->__freezer = $__freezer;
+                $object->__freezer = json_encode($__freezer);
             }
         }
 

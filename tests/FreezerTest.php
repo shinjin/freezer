@@ -761,7 +761,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     public function testNonDirtyObjectIsRecognizedAsNotBeingDirty()
     {
         $object = new \A(1, 2, 3);
-        $object->__freezer['hash'] = '1a66b04455fbcb456fca201730e8b9fb1336d2e7';
+        $object->__freezer = '{"hash":"1a66b04455fbcb456fca201730e8b9fb1336d2e7"}';
 
         $this->assertFalse($this->freezer->isDirty($object));
     }
@@ -772,7 +772,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     public function testDirtyObjectIsRecognizedAsBeingDirty()
     {
         $object = new \A(3, 2, 1);
-        $object->__freezer['hash'] = 'a6efdb77cb879e26cf30635156cf045a7e7f9564';
+        $object->__freezer = '{"hash":"a6efdb77cb879e26cf30635156cf045a7e7f9564"}';
 
         $this->assertTrue($this->freezer->isDirty($object));
     }
@@ -793,7 +793,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     public function testDirtyObjectIsRecognizedAsBeingDirty3()
     {
         $object = new \A(3, 2, 1);
-        $object->__freezer['hash'] = 'a6efdb77cb879e26cf30635156cf045a7e7f9564';
+        $object->__freezer = '{"hash":"a6efdb77cb879e26cf30635156cf045a7e7f9564"}';
 
         $this->assertTrue($this->freezer->isDirty($object, true));
         $this->assertFalse($this->freezer->isDirty($object));
