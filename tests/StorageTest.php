@@ -71,9 +71,9 @@ class StorageTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers Freezer\Storage::__construct
-     * @covers Freezer\Storage::__getFreezer
-     * @covers Freezer\Storage::__setUseLazyLoad
-     * @covers Freezer\Storage::__getUseLazyLoad
+     * @covers Freezer\Storage::getFreezer
+     * @covers Freezer\Storage::setUseLazyLoad
+     * @covers Freezer\Storage::getUseLazyLoad
      */
     public function testConstructorWithDefaultArguments()
     {
