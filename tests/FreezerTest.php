@@ -400,40 +400,6 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers  Freezer\Freezer::freeze
-     * @covers  Freezer\Freezer::setAttributeReader
-     * @depends testFreezingAnObjectWorks
-     */
-    public function testFreezingAnObjectWithCustomAttributeReaderWorks()
-    {
-        $this->freezer->setAttributeReader(
-            function($object) {
-                foreach (get_object_vars($object) as $name => $value) {
-                    $result[$name] = $value;
-                }
-                return $result;
-            }
-        );
-
-        $this->assertEquals(
-          array(
-            'root'    => 'a',
-            'objects' => array(
-              'a' => array(
-                'class' => 'A',
-                'isDirty'   => true,
-                'state'     => array(
-                  'a'         => 1,
-                  '__freezer' => '{"hash":"41833b55e8b1c598952963eeb2e2f02d73d3fe60"}'
-                )
-              )
-            )
-          ),
-          $this->freezer->freeze(new \A(1, 2, 3))
-        );
-    }
-
-    /**
-     * @covers  Freezer\Freezer::freeze
      * @covers  Freezer\Freezer::thaw
      * @depends testFreezingAnObjectWorks
      */
@@ -624,10 +590,10 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers Freezer\Freezer::__construct
-     * @covers Freezer\Freezer::setIdAttribute
-     * @covers Freezer\Freezer::getIdAttribute
-     * @covers Freezer\Freezer::setAttributeReader
-     * @covers Freezer\Freezer::getAttributeReader
+     * @covers Freezer\Freezer::setIdProperty
+     * @covers Freezer\Freezer::getIdProperty
+     * @covers Freezer\Freezer::setBlacklist
+     * @covers Freezer\Freezer::getBlacklist
      * @covers Freezer\Freezer::setUseAutoload
      * @covers Freezer\Freezer::getUseAutoload
      */
@@ -635,14 +601,14 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     {
         $freezer = new Freezer;
 
-        $this->assertSame('__freezer_uuid', $freezer->getIdAttribute());
-        $this->assertSame(array($freezer, 'readAttributes'), $freezer->getAttributeReader());
+        $this->assertSame('__freezer_uuid', $freezer->getIdProperty());
+        $this->assertSame(array(), $freezer->getBlacklist());
         $this->assertTrue($freezer->getUseAutoload());
     }
 
     /**
      * @covers            Freezer\Freezer::__construct
-     * @covers            Freezer\Freezer::setIdAttribute
+     * @covers            Freezer\Freezer::setIdProperty
      * @expectedException InvalidArgumentException
      */
     public function testExceptionIsRaisedForInvalidConstructorArguments1()
@@ -852,34 +818,49 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Freezer\Freezer::readAttributes
+     * @covers Freezer\Freezer::readProperties
      */
-    public function testAttributesOfAnObjectCanBeRead()
+    public function testPropertiesOfAnObjectCanBeRead()
     {
         $this->assertEquals(
           array('a' => 1, 'b' => 2, 'c' => 3),
-          $this->freezer->readAttributes(new \A(1, 2, 3))
+          $this->freezer->readProperties(new \A(1, 2, 3))
         );
     }
 
     /**
-     * @covers  Freezer\Freezer::readAttributes
-     * @depends testAttributesOfAnObjectCanBeRead
+     * @covers  Freezer\Freezer::readProperties
+     * @depends testPropertiesOfAnObjectCanBeRead
      */
-    public function testAttributesOfAnObjectWithAggregatedObjectCanBeRead()
+    public function testPropertiesOfAnObjectWithAggregatedObjectCanBeRead()
     {
         $this->assertEquals(
           array('a' => new \A(1, 2, 3)),
-          $this->freezer->readAttributes(new \B)
+          $this->freezer->readProperties(new \B)
         );
     }
 
     /**
-     * @covers            Freezer\Freezer::readAttributes
+     * @covers  Freezer\Freezer::readProperties
+     * @covers  Freezer\Freezer::setBlacklist
+     * @depends testPropertiesOfAnObjectCanBeRead
+     */
+    public function testPropertiesOfAnObjectWithFilteredPropertiesCanBeRead()
+    {
+        $this->freezer->setBlacklist(array('a'));
+
+        $this->assertEquals(
+          array('b' => 2, 'c' => 3),
+          $this->freezer->readProperties(new \A(1, 2, 3))
+        );
+    }
+
+    /**
+     * @covers            Freezer\Freezer::readProperties
      * @expectedException InvalidArgumentException
      */
-    public function testExceptionIsThrownIfNotAnObjectIsPassedToReadAttributes()
+    public function testExceptionIsThrownIfNotAnObjectIsPassedToReadProperties()
     {
-        $this->freezer->readAttributes(null);
+        $this->freezer->readProperties(null);
     }
 }

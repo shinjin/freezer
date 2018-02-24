@@ -45,7 +45,7 @@ class LazyProxy
     }
 
     /**
-     * Delegates the attribute read access to the real object and
+     * Delegates the property read access to the real object and
      * tries to replace the lazy proxy object with it.
      *
      * @param  string $name
@@ -53,15 +53,15 @@ class LazyProxy
      */
     public function __get($name)
     {
-        $object    = $this->replaceProxy(2);
-        $attribute = new \ReflectionProperty($object, $name);
-        $attribute->setAccessible(true);
+        $object   = $this->replaceProxy(2);
+        $property = new \ReflectionProperty($object, $name);
+        $property->setAccessible(true);
 
-        return $attribute->getValue($object);
+        return $property->getValue($object);
     }
 
     /**
-     * Delegates the attribute write access to the real object and
+     * Delegates the property write access to the real object and
      * tries to replace the lazy proxy object with it.
      *
      * @param string $name
@@ -69,11 +69,11 @@ class LazyProxy
      */
     public function __set($name, $value)
     {
-        $object    = $this->replaceProxy(2);
-        $attribute = new \ReflectionProperty($object, $name);
-        $attribute->setAccessible(true);
+        $object   = $this->replaceProxy(2);
+        $property = new \ReflectionProperty($object, $name);
+        $property->setAccessible(true);
 
-        $attribute->setValue($object, $value);
+        $property->setValue($object, $value);
     }
 
     /**
@@ -115,11 +115,11 @@ class LazyProxy
         if (isset($trace[$offset]['object'])) {
             $reflector = new \ReflectionObject($trace[$offset]['object']);
 
-            foreach ($reflector->getProperties() as $attribute) {
-                $attribute->setAccessible(true);
+            foreach ($reflector->getProperties() as $property) {
+                $property->setAccessible(true);
 
-                if ($attribute->getValue($trace[$offset]['object']) === $this) {
-                    $attribute->setValue($trace[$offset]['object'], $object);
+                if ($property->getValue($trace[$offset]['object']) === $this) {
+                    $property->setValue($trace[$offset]['object'], $object);
                     break;
                 }
             }

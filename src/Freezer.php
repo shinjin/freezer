@@ -8,12 +8,12 @@ class Freezer
     /**
      * @var string
      */
-    private $idAttribute;
+    private $idProperty;
 
     /**
-     * @var callable
+     * @var array
      */
-    private $attributeReader;
+    private $blacklist;
 
     /**
      * @var boolean
@@ -23,22 +23,18 @@ class Freezer
     /**
      * Constructor.
      *
-     * @param  string                   $idAttribute
-     * @param  callable                 $readAttributes
+     * @param  string                   $idProperty
+     * @param  array                    $blacklist
      * @param  boolean                  $useAutoload
      * @throws InvalidArgumentException
      */
     public function __construct(
-        $idAttribute = '__freezer_uuid',
-        $attributeReader = null,
+        $idProperty = '__freezer_uuid',
+        array $blacklist = array(),
         $useAutoload = true
     ){
-        if ($attributeReader === null) {
-            $attributeReader = array($this, 'readAttributes');
-        }
-
-        $this->setIdAttribute($idAttribute);
-        $this->setAttributeReader($attributeReader);
+        $this->setIdProperty($idProperty);
+        $this->setBlacklist($blacklist);
         $this->setUseAutoload($useAutoload);
     }
 
@@ -57,9 +53,9 @@ class Freezer
         }
 
         // If the object has not been frozen before, generate a new UUID and
-        // store it in the "special" __freezer_uuid attribute.
-        if (!isset($object->{$this->idAttribute})) {
-            $object->{$this->idAttribute} = $this->generateId();
+        // store it in the "special" __freezer_uuid property.
+        if (!isset($object->{$this->idProperty})) {
+            $object->{$this->idProperty} = $this->generateId();
         }
 
         if (!isset($object->__freezer)) {
@@ -67,7 +63,7 @@ class Freezer
         }
 
         $isDirty = $this->isDirty($object, true);
-        $uuid    = (string)$object->{$this->idAttribute};
+        $uuid    = (string)$object->{$this->idProperty};
 
         if (!isset($objects[$uuid])) {
             $objects[$uuid] = array(
@@ -76,11 +72,9 @@ class Freezer
                 'state'   => array()
             );
 
-            // Iterate over the attributes of the object.
-            $attributes = call_user_func($this->attributeReader, $object);
-
-            foreach ($attributes as $k => $v) {
-                if ($k !== $this->idAttribute) {
+            // Iterate over the properties of the object.
+            foreach ($this->readProperties($object) as $k => $v) {
+                if ($k !== $this->idProperty) {
                     if (is_array($v)) {
                         $this->freezeArray($v, $objects);
                     } elseif (is_object($v)) {
@@ -88,7 +82,7 @@ class Freezer
                         $this->freeze($v, $objects);
 
                         // Replace $v with the aggregated object's UUID.
-                        $v = '__freezer_' . (string)$v->{$this->idAttribute};
+                        $v = '__freezer_' . (string)$v->{$this->idProperty};
                     } elseif (is_resource($v)) {
                         $v = null;
                     }
@@ -166,14 +160,14 @@ class Freezer
 
             foreach ($state as $name => $value) {
                 if (strpos($name, '__freezer') !== 0) {
-                    $attribute = $reflector->getProperty($name);
-                    $attribute->setAccessible(true);
-                    $attribute->setValue($objects[$root], $value);
+                    $property = $reflector->getProperty($name);
+                    $property->setAccessible(true);
+                    $property->setValue($objects[$root], $value);
                 }
             }
 
             // Store UUID.
-            $objects[$root]->{$this->idAttribute} = $root;
+            $objects[$root]->{$this->idProperty} = $root;
 
             // Store __freezer.
             if (isset($state['__freezer'])) {
@@ -212,49 +206,47 @@ class Freezer
     }
 
     /**
-     * Returns the id attribute name
+     * Returns the id property name
      *
      * @return string
      */
-    public function getIdAttribute()
+    public function getIdProperty()
     {
-        return $this->idAttribute;
+        return $this->idProperty;
     }
 
     /**
-     * Sets the name to use for the id attribute
+     * Sets the name to use for the id property
      *
-     * @param  string $idAttribute
+     * @param  string $idProperty
      */
-    public function setIdAttribute($idAttribute)
+    public function setIdProperty($idProperty)
     {
-        if (!is_string($idAttribute)) {
+        if (!is_string($idProperty)) {
             throw new InvalidArgumentException(1, 'string');
         }
 
-        $this->idAttribute = $idAttribute;
+        $this->idProperty = $idProperty;
     }
 
     /**
-     * Returns the callable to iterate over attributes to be added to the object
-     * state.
+     * Returns the blacklist of properties that are not stored.
      *
      * @return array
      */
-    public function getAttributeReader()
+    public function getBlacklist()
     {
-        return $this->attributeReader;
+        return $this->blacklist;
     }
 
     /**
-     * Sets the callable to iterate over attributes to be added to the object
-     * state.
+     * Sets the blacklist of properties that are not stored.
      *
-     * @param callable $attributeReader
+     * @param array $blacklist
      */
-    public function setAttributeReader($attributeReader)
+    public function setBlacklist(array $blacklist)
     {
-        $this->attributeReader = $attributeReader;
+        $this->blacklist = $blacklist;
     }
 
     /**
@@ -285,7 +277,7 @@ class Freezer
     }
 
     /**
-     * Hashes an object using the SHA1 hashing function on the attribute values
+     * Hashes an object using the SHA1 hashing function on the property values
      * of an object without recursing into aggregated arrays or objects.
      *
      * @param  object $object The object that is to be hashed.
@@ -298,28 +290,28 @@ class Freezer
             throw new InvalidArgumentException(1, 'object');
         }
 
-        $attributes = call_user_func($this->attributeReader, $object);
-        ksort($attributes);
+        $properties = $this->readProperties($object);
+        ksort($properties);
 
-        if (isset($attributes['__freezer'])) {
-            unset($attributes['__freezer']);
+        if (isset($properties['__freezer'])) {
+            unset($properties['__freezer']);
         }
 
-        foreach ($attributes as $key => $value) {
+        foreach ($properties as $key => $value) {
             if (is_array($value)) {
-                $attributes[$key] = '<array>';
+                $properties[$key] = '<array>';
             } elseif (is_object($value)) {
-                if (!isset($value->{$this->idAttribute})) {
-                    $value->{$this->idAttribute} = $this->generateId();
+                if (!isset($value->{$this->idProperty})) {
+                    $value->{$this->idProperty} = $this->generateId();
                 }
 
-                $attributes[$key] = (string)$value->{$this->idAttribute};
+                $properties[$key] = (string)$value->{$this->idProperty};
             } elseif (is_resource($value)) {
-                $attributes[$key] = null;
+                $properties[$key] = null;
             }
         }
 
-        return sha1(get_class($object) . join(':', $attributes));
+        return sha1(get_class($object) . join(':', $properties));
     }
 
     /**
@@ -380,14 +372,14 @@ class Freezer
     }
 
     /**
-     * Returns an associative array of all attributes of an object,
+     * Returns an associative array of all properties of an object,
      * including those declared as protected or private.
      *
-     * @param  object $object The object for which all attributes are returned.
+     * @param  object $object The object for which all properties are returned.
      * @return array
      * @throws InvalidArgumentException
      */
-    public function readAttributes($object)
+    public function readProperties($object)
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException(1, 'object');
@@ -396,10 +388,13 @@ class Freezer
         $reflector = new \ReflectionObject($object);
         $result    = array();
 
-        // Iterate over the attributes of the object.
-        foreach ($reflector->getProperties() as $attribute) {
-            $attribute->setAccessible(true);
-            $result[$attribute->getName()] = $attribute->getValue($object);
+        // Iterate over the properties of the object.
+        foreach ($reflector->getProperties() as $property) {
+            $name = $property->getName();
+            if (!in_array($name, $this->blacklist)) {
+                $property->setAccessible(true);
+                $result[$name] = $property->getValue($object);
+            }
         }
 
         return $result;
