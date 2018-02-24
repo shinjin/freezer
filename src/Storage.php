@@ -36,6 +36,16 @@ abstract class Storage
     }
 
     /**
+     * Returns the freezer object.
+     *
+     * @return Freezer\Freezer
+     */
+    public function getFreezer()
+    {
+        return $this->freezer;
+    }
+
+    /**
      * Sets the flag that controls whether objects are fetched using lazy load.
      *
      * @param  boolean $flag
@@ -48,6 +58,16 @@ abstract class Storage
         }
 
         $this->useLazyLoad = $flag;
+    }
+
+    /**
+     * Returns the flag that controls whether objects are fetched using lazy load.
+     *
+     * @return boolean
+     */
+    public function getUseLazyLoad()
+    {
+        return $this->useLazyLoad;
     }
 
     /**

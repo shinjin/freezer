@@ -71,12 +71,16 @@ class StorageTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers Freezer\Storage::__construct
+     * @covers Freezer\Storage::__getFreezer
+     * @covers Freezer\Storage::__setUseLazyLoad
+     * @covers Freezer\Storage::__getUseLazyLoad
      */
     public function testConstructorWithDefaultArguments()
     {
         $this->assertInstanceOf(
-          'Freezer\\Freezer', $this->readAttribute($this->stub, 'freezer')
+          'Freezer\\Freezer', $this->stub->getFreezer()
         );
+        $this->assertSame(false, $this->stub->getUseLazyLoad());
     }
 
     /**
