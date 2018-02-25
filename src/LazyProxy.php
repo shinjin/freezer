@@ -53,11 +53,7 @@ class LazyProxy
      */
     public function __get($name)
     {
-        $object   = $this->replaceProxy(2);
-        $property = new \ReflectionProperty($object, $name);
-        $property->setAccessible(true);
-
-        return $property->getValue($object);
+        return $this->replaceProxy(2)->{$name};
     }
 
     /**
@@ -69,11 +65,7 @@ class LazyProxy
      */
     public function __set($name, $value)
     {
-        $object   = $this->replaceProxy(2);
-        $property = new \ReflectionProperty($object, $name);
-        $property->setAccessible(true);
-
-        $property->setValue($object, $value);
+        $this->replaceProxy(2)->{$name} = $value;
     }
 
     /**
@@ -86,10 +78,8 @@ class LazyProxy
      */
     public function __call($name, array $arguments)
     {
-        $object    = $this->replaceProxy(3);
-        $reflector = new \ReflectionMethod($object, $name);
-
-        return $reflector->invokeArgs($object, $arguments);
+        $callback = array($this->replaceProxy(3), $name);
+        return call_user_func_array($callback, $arguments);
     }
 
     /**
