@@ -45,6 +45,26 @@ class LazyProxy
     }
 
     /**
+     * Returns the UUID for the real object.
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * Returns true if the object has been fetched; false otherwise.
+     *
+     * @return string
+     */
+    public function isThawed()
+    {
+        return $this->thawedObject !== null;
+    }
+
+    /**
      * Delegates the property read access to the real object and
      * tries to replace the lazy proxy object with it.
      *

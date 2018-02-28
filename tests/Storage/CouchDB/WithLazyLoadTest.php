@@ -346,4 +346,118 @@ class WithLazyLoadTest extends TestCase
         $this->assertEquals($root->children[0]->payload, $fetchedObject->children[0]->payload);
         $this->assertEquals($root->children[1]->payload, $fetchedObject->children[1]->payload);
     }
+
+    /**
+     * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getObject
+     * @covers Freezer\LazyProxy::getUuid
+     * @covers Freezer\LazyProxy::isThawed
+     * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\Freezer::freeze
+     * @covers Freezer\Freezer::freezeArray
+     * @covers Freezer\Freezer::generateHash
+     * @covers Freezer\Storage::store
+     * @covers Freezer\Storage::fetch
+     * @covers Freezer\Storage\CouchDB::doStore
+     * @covers Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAndFetchingAnObjectThatAggregatesOtherObjectsWorks
+     */
+    public function testStoringAndFetchingAnObjectThatAggregatesLazyProxyObjectsWorks()
+    {
+        $object = new \C;
+        $this->storage->store($object);
+
+        $fetchedObject = $this->storage->fetch('a');
+        $this->storage->store($fetchedObject);
+
+        $storedObject = $this->storage->fetch('a');
+
+        $this->assertEquals($object->b->a->a, $storedObject->b->a->a);
+    }
+
+    /**
+     * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getObject
+     * @covers Freezer\LazyProxy::getUuid
+     * @covers Freezer\LazyProxy::isThawed
+     * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\Freezer::freeze
+     * @covers Freezer\Freezer::freezeArray
+     * @covers Freezer\Freezer::generateHash
+     * @covers Freezer\Storage::store
+     * @covers Freezer\Storage::fetch
+     * @covers Freezer\Storage\CouchDB::doStore
+     * @covers Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAndFetchingAnObjectThatAggregatesOtherObjectsWorks
+     */
+    public function testStoringAndFetchingAnObjectThatAggregatesLazyProxyObjectsWorks2()
+    {
+        $object = new \C;
+        $this->storage->store($object);
+
+        $fetchedObject = $this->storage->fetch('a');
+        $fetchedObject->b->a->a = 2;
+        $this->storage->store($fetchedObject);
+
+        $storedObject = $this->storage->fetch('a');
+
+        $this->assertEquals($fetchedObject->b->a->a, $storedObject->b->a->a);
+    }
+
+    /**
+     * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getObject
+     * @covers Freezer\LazyProxy::getUuid
+     * @covers Freezer\LazyProxy::isThawed
+     * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\Freezer::freeze
+     * @covers Freezer\Freezer::freezeArray
+     * @covers Freezer\Freezer::generateHash
+     * @covers Freezer\Storage::store
+     * @covers Freezer\Storage::fetch
+     * @covers Freezer\Storage\CouchDB::doStore
+     * @covers Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAndFetchingAnObjectThatAggregatesOtherObjectsInAnArrayWorks
+     */
+    public function testStoringAndFetchingAnObjectThatAggregatesLazyProxyObjectsInAnArrayWorks()
+    {
+        $object = new \D;
+        $this->storage->store($object);
+
+        $fetchedObject = $this->storage->fetch('a');
+        $this->storage->store($fetchedObject);
+
+        $storedObject = $this->storage->fetch('a');
+
+        $this->assertEquals($object->array[0]->a, $storedObject->array[0]->a);
+    }
+
+    /**
+     * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getObject
+     * @covers Freezer\LazyProxy::getUuid
+     * @covers Freezer\LazyProxy::isThawed
+     * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\Freezer::freeze
+     * @covers Freezer\Freezer::freezeArray
+     * @covers Freezer\Freezer::generateHash
+     * @covers Freezer\Storage::store
+     * @covers Freezer\Storage::fetch
+     * @covers Freezer\Storage\CouchDB::doStore
+     * @covers Freezer\Storage\CouchDB::doFetch
+     * @depends testStoringAndFetchingAnObjectThatAggregatesOtherObjectsInAnArrayWorks
+     */
+    public function testStoringAndFetchingAnObjectThatAggregatesLazyProxyObjectsInAnArrayWorks2()
+    {
+        $object = new \D;
+        $this->storage->store($object);
+
+        $fetchedObject = $this->storage->fetch('a');
+        $fetchedObject->array[0]->a = 2;
+        $this->storage->store($fetchedObject);
+
+        $storedObject = $this->storage->fetch('a');
+
+        $this->assertEquals($fetchedObject->array[0]->a, $storedObject->array[0]->a);
+    }
 }

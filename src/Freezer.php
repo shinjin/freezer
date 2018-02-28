@@ -78,11 +78,21 @@ class Freezer
                     if (is_array($v)) {
                         $this->freezeArray($v, $objects);
                     } elseif (is_object($v)) {
-                        // Freeze the aggregated object.
-                        $this->freeze($v, $objects);
+                        if ($v instanceof LazyProxy) {
+                            if ($v->isThawed()) {
+                                $v = $v->getObject();
+                            } else {
+                                $v = '__freezer_' . $v->getUuid();
+                            }
+                        }
 
-                        // Replace $v with the aggregated object's UUID.
-                        $v = '__freezer_' . $v->{$this->idProperty};
+                        if (is_object($v)) {
+                            // Freeze the aggregated object.
+                            $this->freeze($v, $objects);
+
+                            // Replace $v with the aggregated object's UUID.
+                            $v = '__freezer_' . $v->{$this->idProperty};
+                        }
                     } elseif (is_resource($v)) {
                         $v = null;
                     }
@@ -108,9 +118,19 @@ class Freezer
             if (is_array($value)) {
                 $this->freezeArray($value, $objects);
             } elseif (is_object($value)) {
-                $tmp   = $this->freeze($value, $objects);
-                $value = '__freezer_' . $tmp['root'];
-                unset($tmp);
+                if ($value instanceof LazyProxy) {
+                    if ($value->isThawed()) {
+                        $value = $value->getObject();
+                    } else {
+                        $value = '__freezer_' . $value->getUuid();
+                    }
+                }
+
+                if (is_object($value)) {
+                    $tmp   = $this->freeze($value, $objects);
+                    $value = '__freezer_' . $tmp['root'];
+                    unset($tmp);
+                }
             }
         }
     }
@@ -301,11 +321,15 @@ class Freezer
             if (is_array($value)) {
                 $properties[$key] = '<array>';
             } elseif (is_object($value)) {
-                if (!isset($value->{$this->idProperty})) {
-                    $value->{$this->idProperty} = $this->generateId();
-                }
+                if ($value instanceof LazyProxy) {
+                    $properties[$key] = $value->getUuid();
+                } else {
+                    if (!isset($value->{$this->idProperty})) {
+                        $value->{$this->idProperty} = $this->generateId();
+                    }
 
-                $properties[$key] = $value->{$this->idProperty};
+                    $properties[$key] = $value->{$this->idProperty};
+                }
             } elseif (is_resource($value)) {
                 $properties[$key] = null;
             }
