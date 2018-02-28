@@ -11,7 +11,12 @@ class LazyProxy
     /**
      * @var string
      */
-    private $uuid;
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $idProperty;
 
     /**
      * @var object
@@ -22,12 +27,15 @@ class LazyProxy
      * Constructor.
      *
      * @param Freezer\Storage $storage
-     * @param string          $uuid
+     * @param string          $id
+     * @param string          $idProperty
      */
-    public function __construct(Storage $storage, $uuid)
+    public function __construct(Storage $storage, $id, $idProperty)
     {
-        $this->storage = $storage;
-        $this->uuid    = $uuid;
+        $this->storage      = $storage;
+        $this->id           = $id;
+        $this->idProperty   = $idProperty;
+        $this->thawedObject = null;
     }
 
     /**
@@ -38,20 +46,20 @@ class LazyProxy
     public function getObject()
     {
         if ($this->thawedObject === null) {
-            $this->thawedObject = $this->storage->fetch($this->uuid);
+            $this->thawedObject = $this->storage->fetch($this->id);
         }
 
         return $this->thawedObject;
     }
 
     /**
-     * Returns the UUID for the real object.
+     * Returns the real object id.
      *
      * @return string
      */
-    public function getUuid()
+    public function getId()
     {
-        return $this->uuid;
+        return $this->id;
     }
 
     /**
@@ -73,6 +81,10 @@ class LazyProxy
      */
     public function __get($name)
     {
+        if ($this->thawedObject === null && $name === $this->idProperty) {
+            return $this->id;
+        }
+
         return $this->replaceProxy(2)->{$name};
     }
 
@@ -100,6 +112,22 @@ class LazyProxy
     {
         $callback = array($this->replaceProxy(3), $name);
         return call_user_func_array($callback, $arguments);
+    }
+
+    /**
+     * Delegates the property isset check to the real object and
+     * tries to replace the lazy proxy object with it.
+     *
+     * @param  string $name
+     * @return mixed
+     */
+    public function __isset($name)
+    {
+        if ($this->thawedObject === null && $name === $this->idProperty) {
+            return true;
+        }
+
+        return isset($this->replaceProxy(2)->{$name});
     }
 
     /**

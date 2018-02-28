@@ -52,6 +52,14 @@ class Freezer
             throw new InvalidArgumentException(1, 'object');
         }
 
+        if ($object instanceof LazyProxy) {
+            if ($object->isThawed()) {
+                $object = $object->getObject();
+            } else {
+                return array('root' => $object->getId());
+            }
+        }
+
         // If the object has not been frozen before, generate a new UUID and
         // store it in the "special" __freezer_uuid property.
         if (!isset($object->{$this->idProperty})) {
@@ -63,10 +71,10 @@ class Freezer
         }
 
         $isDirty = $this->isDirty($object, true);
-        $uuid    = $object->{$this->idProperty};
+        $id      = $object->{$this->idProperty};
 
-        if (!isset($objects[$uuid])) {
-            $objects[$uuid] = array(
+        if (!isset($objects[$id])) {
+            $objects[$id] = array(
                 'class'   => get_class($object),
                 'isDirty' => $isDirty,
                 'state'   => array()
@@ -78,32 +86,22 @@ class Freezer
                     if (is_array($v)) {
                         $this->freezeArray($v, $objects);
                     } elseif (is_object($v)) {
-                        if ($v instanceof LazyProxy) {
-                            if ($v->isThawed()) {
-                                $v = $v->getObject();
-                            } else {
-                                $v = '__freezer_' . $v->getUuid();
-                            }
-                        }
+                        // Freeze the aggregated object.
+                        $this->freeze($v, $objects);
 
-                        if (is_object($v)) {
-                            // Freeze the aggregated object.
-                            $this->freeze($v, $objects);
-
-                            // Replace $v with the aggregated object's UUID.
-                            $v = '__freezer_' . $v->{$this->idProperty};
-                        }
+                        // Replace $v with the aggregated object's id.
+                        $v = '__freezer_' . $v->{$this->idProperty};
                     } elseif (is_resource($v)) {
                         $v = null;
                     }
 
                     // Store the attribute in the object's state array.
-                    $objects[$uuid]['state'][$k] = $v;
+                    $objects[$id]['state'][$k] = $v;
                 }
             }
         }
 
-        return array('root' => $uuid, 'objects' => $objects);
+        return array('root' => $id, 'objects' => $objects);
     }
 
     /**
@@ -118,19 +116,9 @@ class Freezer
             if (is_array($value)) {
                 $this->freezeArray($value, $objects);
             } elseif (is_object($value)) {
-                if ($value instanceof LazyProxy) {
-                    if ($value->isThawed()) {
-                        $value = $value->getObject();
-                    } else {
-                        $value = '__freezer_' . $value->getUuid();
-                    }
-                }
-
-                if (is_object($value)) {
-                    $tmp   = $this->freeze($value, $objects);
-                    $value = '__freezer_' . $tmp['root'];
-                    unset($tmp);
-                }
+                $tmp   = $this->freeze($value, $objects);
+                $value = '__freezer_' . $tmp['root'];
+                unset($tmp);
             }
         }
     }
@@ -186,7 +174,7 @@ class Freezer
                 }
             }
 
-            // Store UUID.
+            // Store id.
             $objects[$root]->{$this->idProperty} = $root;
 
             // Store __freezer.
@@ -321,15 +309,11 @@ class Freezer
             if (is_array($value)) {
                 $properties[$key] = '<array>';
             } elseif (is_object($value)) {
-                if ($value instanceof LazyProxy) {
-                    $properties[$key] = $value->getUuid();
-                } else {
-                    if (!isset($value->{$this->idProperty})) {
-                        $value->{$this->idProperty} = $this->generateId();
-                    }
-
-                    $properties[$key] = $value->{$this->idProperty};
+                if (!isset($value->{$this->idProperty})) {
+                    $value->{$this->idProperty} = $this->generateId();
                 }
+
+                $properties[$key] = $value->{$this->idProperty};
             } elseif (is_resource($value)) {
                 $properties[$key] = null;
             }

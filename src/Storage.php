@@ -123,14 +123,14 @@ abstract class Storage
         foreach ($array as &$value) {
             if (is_array($value)) {
                 $this->fetchArray($value, $objects);
-            } elseif (is_string($value) &&
-                      strpos($value, '__freezer_') === 0) {
-                $uuid = str_replace('__freezer_', '', $value);
+            } elseif (is_string($value) && strpos($value, '__freezer_') === 0) {
+                $id = str_replace('__freezer_', '', $value);
 
                 if (!$this->useLazyLoad) {
-                    $this->doFetch($uuid, $objects);
+                    $this->doFetch($id, $objects);
                 } else {
-                    $value = new LazyProxy($this, $uuid);
+                    $idProperty = $this->freezer->getIdProperty();
+                    $value = new LazyProxy($this, $id, $idProperty);
                 }
             }
         }

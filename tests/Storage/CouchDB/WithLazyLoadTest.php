@@ -349,10 +349,11 @@ class WithLazyLoadTest extends TestCase
 
     /**
      * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getId
      * @covers Freezer\LazyProxy::getObject
-     * @covers Freezer\LazyProxy::getUuid
      * @covers Freezer\LazyProxy::isThawed
      * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\LazyProxy::__isset
      * @covers Freezer\Freezer::freeze
      * @covers Freezer\Freezer::freezeArray
      * @covers Freezer\Freezer::generateHash
@@ -377,10 +378,11 @@ class WithLazyLoadTest extends TestCase
 
     /**
      * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getId
      * @covers Freezer\LazyProxy::getObject
-     * @covers Freezer\LazyProxy::getUuid
      * @covers Freezer\LazyProxy::isThawed
      * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\LazyProxy::__isset
      * @covers Freezer\Freezer::freeze
      * @covers Freezer\Freezer::freezeArray
      * @covers Freezer\Freezer::generateHash
@@ -406,10 +408,11 @@ class WithLazyLoadTest extends TestCase
 
     /**
      * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getId
      * @covers Freezer\LazyProxy::getObject
-     * @covers Freezer\LazyProxy::getUuid
      * @covers Freezer\LazyProxy::isThawed
      * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\LazyProxy::__isset
      * @covers Freezer\Freezer::freeze
      * @covers Freezer\Freezer::freezeArray
      * @covers Freezer\Freezer::generateHash
@@ -434,10 +437,11 @@ class WithLazyLoadTest extends TestCase
 
     /**
      * @covers Freezer\LazyProxy::__construct
+     * @covers Freezer\LazyProxy::getId
      * @covers Freezer\LazyProxy::getObject
-     * @covers Freezer\LazyProxy::getUuid
      * @covers Freezer\LazyProxy::isThawed
      * @covers Freezer\LazyProxy::__get
+     * @covers Freezer\LazyProxy::__isset
      * @covers Freezer\Freezer::freeze
      * @covers Freezer\Freezer::freezeArray
      * @covers Freezer\Freezer::generateHash
