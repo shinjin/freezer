@@ -81,22 +81,22 @@ class Freezer
             );
 
             // Iterate over the properties of the object.
-            foreach ($this->readProperties($object) as $k => $v) {
-                if ($k !== $this->idProperty) {
-                    if (is_array($v)) {
-                        $this->freezeArray($v, $objects);
-                    } elseif (is_object($v)) {
+            foreach ($this->readProperties($object) as $name => $value) {
+                if ($name !== $this->idProperty) {
+                    if (is_array($value)) {
+                        $this->freezeArray($value, $objects);
+                    } elseif (is_object($value)) {
                         // Freeze the aggregated object.
-                        $this->freeze($v, $objects);
+                        $this->freeze($value, $objects);
 
                         // Replace $v with the aggregated object's id.
-                        $v = '__freezer_' . $v->{$this->idProperty};
-                    } elseif (is_resource($v)) {
-                        $v = null;
+                        $value = '__freezer_' . $value->{$this->idProperty};
+                    } elseif (is_resource($value)) {
+                        $value = null;
                     }
 
                     // Store the attribute in the object's state array.
-                    $objects[$id]['state'][$k] = $v;
+                    $objects[$id]['state'][$name] = $value;
                 }
             }
         }
@@ -116,9 +116,8 @@ class Freezer
             if (is_array($value)) {
                 $this->freezeArray($value, $objects);
             } elseif (is_object($value)) {
-                $tmp   = $this->freeze($value, $objects);
-                $value = '__freezer_' . $tmp['root'];
-                unset($tmp);
+                list($id,) = array_values($this->freeze($value, $objects));
+                $value = '__freezer_' . $id;
             }
         }
     }
@@ -305,17 +304,17 @@ class Freezer
             unset($properties['__freezer']);
         }
 
-        foreach ($properties as $key => $value) {
+        foreach ($properties as $name => $value) {
             if (is_array($value)) {
-                $properties[$key] = '<array>';
+                $properties[$name] = '<array>';
             } elseif (is_object($value)) {
                 if (!isset($value->{$this->idProperty})) {
                     $value->{$this->idProperty} = $this->generateId();
                 }
 
-                $properties[$key] = $value->{$this->idProperty};
+                $properties[$name] = $value->{$this->idProperty};
             } elseif (is_resource($value)) {
-                $properties[$key] = null;
+                $properties[$name] = null;
             }
         }
 
