@@ -16,3 +16,7 @@
 - Update Freezer $blacklist param to filter out object properties
 - Update LazyProxy magic methods to delegate calls directly rather than using reflection
 - Minor bugfixes
+
+## [0.4.0] - 2018-03-01
+- Replace Freezer $blacklist param with $propertyReader callback to iterate object properties
+- Implement proper storage handling for LazyProxy objects
