@@ -71,7 +71,7 @@ class Freezer
         }
 
         $isDirty = $this->isDirty($object, true);
-        $id      = $object->{$this->idProperty};
+        $id      = (string)$object->{$this->idProperty};
 
         if (!isset($objects[$id])) {
             $objects[$id] = array(
@@ -312,7 +312,7 @@ class Freezer
                     $value->{$this->idProperty} = $this->generateId();
                 }
 
-                $properties[$name] = $value->{$this->idProperty};
+                $properties[$name] = (string)$value->{$this->idProperty};
             } elseif (is_resource($value)) {
                 $properties[$name] = null;
             }
