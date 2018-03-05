@@ -399,6 +399,40 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @covers Freezer\Freezer::freeze
+     * @covers Freezer\Freezer::setPropertyReader
+     * @depends testFreezingAnObjectWorks
+     */
+    public function testFreezingAnObjectWithCustomPropertyReaderWorks()
+    {
+        $this->freezer->setPropertyReader(
+            function($object) {
+                foreach (get_object_vars($object) as $name => $value) {
+                    $result[$name] = $value;
+                }
+                return $result;
+            }
+        );
+
+        $this->assertEquals(
+          array(
+            'root'    => 'a',
+            'objects' => array(
+              'a' => array(
+                'class' => 'A',
+                'isDirty'   => true,
+                'state'     => array(
+                  'a'                         => 1,
+                  '__freezer' => '{"hash":"41833b55e8b1c598952963eeb2e2f02d73d3fe60"}'
+                )
+              )
+            )
+          ),
+          $this->freezer->freeze(new \A(1, 2, 3))
+        );
+    }
+
+    /**
      * @covers  Freezer\Freezer::freeze
      * @covers  Freezer\Freezer::thaw
      * @depends testFreezingAnObjectWorks
@@ -592,8 +626,8 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
      * @covers Freezer\Freezer::__construct
      * @covers Freezer\Freezer::setIdProperty
      * @covers Freezer\Freezer::getIdProperty
-     * @covers Freezer\Freezer::setBlacklist
-     * @covers Freezer\Freezer::getBlacklist
+     * @covers Freezer\Freezer::setPropertyReader
+     * @covers Freezer\Freezer::getPropertyReader
      * @covers Freezer\Freezer::setUseAutoload
      * @covers Freezer\Freezer::getUseAutoload
      */
@@ -602,7 +636,7 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
         $freezer = new Freezer;
 
         $this->assertSame('__freezer_uuid', $freezer->getIdProperty());
-        $this->assertSame(array(), $freezer->getBlacklist());
+        $this->assertSame(array($freezer, 'readProperties'), $freezer->getPropertyReader());
         $this->assertTrue($freezer->getUseAutoload());
     }
 
@@ -837,21 +871,6 @@ class FreezerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
           array('a' => new \A(1, 2, 3)),
           $this->freezer->readProperties(new \B)
-        );
-    }
-
-    /**
-     * @covers  Freezer\Freezer::readProperties
-     * @covers  Freezer\Freezer::setBlacklist
-     * @depends testPropertiesOfAnObjectCanBeRead
-     */
-    public function testPropertiesOfAnObjectWithFilteredPropertiesCanBeRead()
-    {
-        $this->freezer->setBlacklist(array('a'));
-
-        $this->assertEquals(
-          array('b' => 2, 'c' => 3),
-          $this->freezer->readProperties(new \A(1, 2, 3))
         );
     }
 

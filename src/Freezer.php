@@ -11,9 +11,9 @@ class Freezer
     private $idProperty;
 
     /**
-     * @var array
+     * @var callable
      */
-    private $blacklist;
+    private $propertyReader;
 
     /**
      * @var boolean
@@ -24,17 +24,22 @@ class Freezer
      * Constructor.
      *
      * @param  string                   $idProperty
-     * @param  array                    $blacklist
+     * @param  callable                 $propertyReader
      * @param  boolean                  $useAutoload
      * @throws InvalidArgumentException
      */
     public function __construct(
         $idProperty = '__freezer_uuid',
-        array $blacklist = array(),
+        $propertyReader = null,
         $useAutoload = true
     ){
         $this->setIdProperty($idProperty);
-        $this->setBlacklist($blacklist);
+
+        if ($propertyReader === null) {
+            $propertyReader = array($this, 'readProperties');
+        }
+
+        $this->setPropertyReader($propertyReader);
         $this->setUseAutoload($useAutoload);
     }
 
@@ -81,7 +86,9 @@ class Freezer
             );
 
             // Iterate over the properties of the object.
-            foreach ($this->readProperties($object) as $name => $value) {
+            $properties = call_user_func($this->propertyReader, $object);
+
+            foreach ($properties as $name => $value) {
                 if ($name !== $this->idProperty) {
                     if (is_array($value)) {
                         $this->freezeArray($value, $objects);
@@ -213,7 +220,7 @@ class Freezer
     }
 
     /**
-     * Returns the id property name
+     * Returns the id property name.
      *
      * @return string
      */
@@ -223,7 +230,7 @@ class Freezer
     }
 
     /**
-     * Sets the name to use for the id property
+     * Sets the name to use for the id property.
      *
      * @param  string $idProperty
      */
@@ -237,23 +244,23 @@ class Freezer
     }
 
     /**
-     * Returns the blacklist of properties that are not stored.
+     * Returns a callable to iterate object properties.
      *
-     * @return array
+     * @return callable
      */
-    public function getBlacklist()
+    public function getPropertyReader()
     {
-        return $this->blacklist;
+        return $this->propertyReader;
     }
 
     /**
-     * Sets the blacklist of properties that are not stored.
+     * Sets a callable to iterate object properties.
      *
-     * @param array $blacklist
+     * @param callable $propertyReader
      */
-    public function setBlacklist(array $blacklist)
+    public function setPropertyReader($propertyReader)
     {
-        $this->blacklist = $blacklist;
+        $this->propertyReader = $propertyReader;
     }
 
     /**
@@ -297,7 +304,7 @@ class Freezer
             throw new InvalidArgumentException(1, 'object');
         }
 
-        $properties = $this->readProperties($object);
+        $properties = call_user_func($this->propertyReader, $object);
         ksort($properties);
 
         if (isset($properties['__freezer'])) {
@@ -397,11 +404,8 @@ class Freezer
 
         // Iterate over the properties of the object.
         foreach ($reflector->getProperties() as $property) {
-            $name = $property->getName();
-            if (!in_array($name, $this->blacklist)) {
-                $property->setAccessible(true);
-                $result[$name] = $property->getValue($object);
-            }
+            $property->setAccessible(true);
+            $result[$property->getName()] = $property->getValue($object);
         }
 
         return $result;
