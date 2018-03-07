@@ -27,7 +27,7 @@ class Pdo extends Storage
      * @param  boolean         $useLazyLoad Flag that controls whether objects
      *                                      are fetched using lazy load or not
      * @param  string          $table       Db table name
-     * @param  array           $db_options  PDO options
+     * @param  array           $dbOptions   PDO options
      * @throws InvalidArgumentException
      */
     public function __construct(
@@ -35,13 +35,13 @@ class Pdo extends Storage
         Freezer $freezer = null,
         $useLazyLoad = false,
         $table = 'freezer',
-        array $db_options = array()
+        array $dbOptions = array()
     ){
         parent::__construct($freezer, $useLazyLoad);
 
         if (!$db instanceof Db) {
             try {
-                $db = new Db($db, $db_options);
+                $db = new Db($db, $dbOptions);
             } catch (\Exception $e) {
                 throw new InvalidArgumentException(1,
                     '$db arg must be a Shinjin\\Pdo\\Db object, PDO object, ' .
