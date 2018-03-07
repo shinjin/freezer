@@ -2,13 +2,14 @@
 namespace Freezer\Tests\Storage;
 
 use Freezer\Storage\Pdo;
+use Shinjin\Pdo\Db;
 
 class PdoTest extends \PHPUnit\Framework\TestCase
 {
     private $freezer;
     private $storage;
 
-    private $pdo;
+    private $db;
 
     /**
      * @covers Freezer\Storage\Pdo::__construct
@@ -24,16 +25,16 @@ class PdoTest extends \PHPUnit\Framework\TestCase
                       ->method('generateId')
                       ->will($this->onConsecutiveCalls('a', 'b', 'c'));
 
-        $this->pdo     = new \PDO('sqlite::memory:');
-        $this->storage = new Pdo($this->pdo, $this->freezer);
+        $this->db      = new Db(new \PDO('sqlite::memory:'));
+        $this->storage = new Pdo($this->db, $this->freezer);
 
-        $this->pdo->exec('CREATE TABLE freezer (id char(40), body text)');
+        $this->db->exec('CREATE TABLE freezer (id char(40), body text)');
     }
 
     protected function getFrozenObjectFromStorage($id)
     {
         $statement = sprintf('SELECT * FROM freezer WHERE id = "%s"', $id);
-        $buffer = $this->pdo->query($statement)->fetch();
+        $buffer = $this->db->query($statement)->fetch();
 
         return json_decode($buffer['body'], true);
     }

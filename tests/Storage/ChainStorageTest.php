@@ -5,6 +5,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Freezer\Storage\ChainStorage;
 use Freezer\Storage\DoctrineCache;
 use Freezer\Storage\Pdo;
+use Shinjin\Pdo\Db;
 
 class ChainStorageTest extends \PHPUnit\Framework\TestCase
 {
@@ -12,7 +13,7 @@ class ChainStorageTest extends \PHPUnit\Framework\TestCase
     private $storageChain;
 
     private $cache;
-    private $pdo;
+    private $db;
 
     /**
      * @covers Freezer\Storage\ChainStorage::__construct
@@ -29,20 +30,20 @@ class ChainStorageTest extends \PHPUnit\Framework\TestCase
                       ->will($this->onConsecutiveCalls('a', 'b', 'c'));
 
         $this->cache = new ArrayCache;
-        $this->pdo   = new \PDO('sqlite::memory:');
+        $this->db    = new Db(new \PDO('sqlite::memory:'));
 
         $this->storageChain = array(
             new DoctrineCache($this->cache, $this->freezer),
-            new Pdo($this->pdo, $this->freezer)
+            new Pdo($this->db, $this->freezer)
         );
 
-        $this->pdo->exec('CREATE TABLE freezer (id char(40), body text)');
+        $this->db->exec('CREATE TABLE freezer (id char(40), body text)');
     }
 
     protected function getFrozenObjectFromPdoStorage($id)
     {
         $statement = sprintf('SELECT * FROM freezer WHERE id = "%s"', $id);
-        $buffer = $this->pdo->query($statement)->fetch();
+        $buffer = $this->db->query($statement)->fetch();
 
         return json_decode($buffer['body'], true);
     }

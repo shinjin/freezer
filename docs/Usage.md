@@ -11,10 +11,16 @@ The fourth **ChainStorage** adapter combines any of the previous adapters allowi
 Each storage adapter is created a bit differently. 
 
 ### Pdo
-The Pdo storage adapter can accept either a PDO object.
+The Pdo storage adapter can accept either a PDO object:
 ``` php
 $pdo = new \PDO('sqlite::memory:');
 $storage = new \Freezer\Storage\Pdo($pdo);
+```
+A [Shinjin\Pdo\Db][link-shinjin-pdo] object:
+``` php
+$pdo = new \PDO('sqlite::memory:');
+$db  = new \Shinjin\Pdo\Db($pdo);
+$storage = new \Freezer\Storage\Pdo($db);
 ```
 Or a list of parameters. The parameters can specify the PDO dsn.
 ``` php
@@ -63,4 +69,5 @@ $storage = new \Freezer\Storage\ChainStorage($storages);
 The order of the storage objects is important. The adapter loops through the storage chain starting with the first object. Therefore it makes sense order the storages from fastest to slowest.
 
 
+[link-shinjin-pdo]: https://github.com/shinjin/pdo/
 [link-pdo-docs]: https://github.com/shinjin/pdo/blob/master/docs/Usage.md#connecting
