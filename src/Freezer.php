@@ -72,7 +72,7 @@ class Freezer
         }
 
         if (!isset($object->__freezer)) {
-            $object->__freezer = '{}';
+            $object->__freezer = array();
         }
 
         $isDirty = $this->isDirty($object, true);
@@ -370,15 +370,14 @@ class Freezer
 
         if (isset($object->__freezer)) {
             $hash = $this->generateHash($object);
-            $__freezer = json_decode($object->__freezer, true);
 
-            if (isset($__freezer['hash']) && $__freezer['hash'] === $hash) {
+            if (isset($object->__freezer['hash']) &&
+                $object->__freezer['hash'] === $hash) {
                 $isDirty = false;
             }
 
             if ($isDirty && $rehash) {
-                $__freezer['hash'] = $hash;
-                $object->__freezer = json_encode($__freezer);
+                $object->__freezer['hash'] = $hash;
             }
         }
 
