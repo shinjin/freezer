@@ -1,7 +1,6 @@
 <?php
 namespace Freezer\Storage;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Freezer\Freezer;
 use Freezer\Storage;
 
