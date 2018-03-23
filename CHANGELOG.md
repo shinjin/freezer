@@ -20,3 +20,8 @@
 ## [0.4.0] - 2018-03-01
 - Replace Freezer $blacklist param with $propertyReader callback to iterate object properties
 - Implement proper storage handling for LazyProxy objects
+
+## [0.5.0] - 2018-03-22
+- Update PDO storage to accept Shinjin\Pdo\Db object
+- Store __freezer value as array
+- Update Storage::doStore to return object id
