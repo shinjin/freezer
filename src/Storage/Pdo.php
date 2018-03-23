@@ -62,7 +62,7 @@ class Pdo extends Storage
         $stmt1 = sprintf('UPDATE %s SET body = ? WHERE id = ?', $this->table);
         $stmt2 = sprintf('INSERT INTO %s (id,body) VALUES (?,?)', $this->table);
 
-        foreach ($frozenObject['objects'] as $id => $object) {
+        foreach (array_reverse($frozenObject['objects']) as $id => $object) {
             if ($object['isDirty'] === true) {
                 $payload = array(
                     'class' => $object['class'],
@@ -81,6 +81,8 @@ class Pdo extends Storage
                 $this->db->commit();
             }
         }
+
+        return $id;
     }
 
     /**

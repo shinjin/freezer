@@ -83,7 +83,11 @@ abstract class Storage
         }
 
         $objects = array();
-        $this->doStore($this->freezer->freeze($object, $objects));
+        $id = $this->doStore($this->freezer->freeze($object, $objects));
+
+        if ($id !== null) {
+            $object->{$this->freezer->getIdProperty()} = $id;
+        }
 
         return $object->{$this->freezer->getIdProperty()};
     }

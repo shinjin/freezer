@@ -34,7 +34,7 @@ class ChainStorage extends Storage
      */
     protected function doStore(array $frozenObject)
     {
-        $stored = true;
+        $result = null;
 
         foreach ($this->storageChain as $storage) {
             if (!$storage instanceof \Freezer\Storage) {
@@ -43,10 +43,10 @@ class ChainStorage extends Storage
                 );
             }
 
-            $stored = $storage->doStore($frozenObject) && $stored;
+            $result = $storage->doStore($frozenObject);
         }
 
-        return $stored;
+        return $result;
     }
 
     /**
