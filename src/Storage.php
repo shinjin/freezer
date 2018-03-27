@@ -133,8 +133,7 @@ abstract class Storage
                 if (!$this->useLazyLoad) {
                     $this->doFetch($id, $objects);
                 } else {
-                    $idProperty = $this->freezer->getIdProperty();
-                    $value = new LazyProxy($this, $id, $idProperty);
+                    $value = new LazyProxy($this, $id);
                 }
             }
         }

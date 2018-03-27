@@ -14,11 +14,6 @@ class LazyProxy
     private $id;
 
     /**
-     * @var string
-     */
-    private $idProperty;
-
-    /**
      * @var object
      */
     private $thawedObject;
@@ -28,13 +23,11 @@ class LazyProxy
      *
      * @param Freezer\Storage $storage
      * @param string          $id
-     * @param string          $idProperty
      */
-    public function __construct(Storage $storage, $id, $idProperty)
+    public function __construct(Storage $storage, $id)
     {
         $this->storage      = $storage;
         $this->id           = $id;
-        $this->idProperty   = $idProperty;
         $this->thawedObject = null;
     }
 
@@ -81,8 +74,10 @@ class LazyProxy
      */
     public function __get($name)
     {
-        if ($this->thawedObject === null && $name === $this->idProperty) {
-            return $this->id;
+        if ($this->thawedObject === null) {
+            if ($name === $this->storage->getFreezer()->getIdProperty()) {
+                return $this->id;
+            }
         }
 
         return $this->replaceProxy(2)->{$name};
@@ -123,8 +118,10 @@ class LazyProxy
      */
     public function __isset($name)
     {
-        if ($this->thawedObject === null && $name === $this->idProperty) {
-            return true;
+        if ($this->thawedObject === null) {
+            if ($name === $this->storage->getFreezer()->getIdProperty()) {
+                return true;
+            }
         }
 
         return isset($this->replaceProxy(2)->{$name});
