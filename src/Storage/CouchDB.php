@@ -65,7 +65,7 @@ class CouchDB extends Storage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doStore(array $frozenObject)
     {
@@ -97,7 +97,7 @@ class CouchDB extends Storage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doFetch($id, array &$objects = array())
     {

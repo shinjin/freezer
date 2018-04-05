@@ -30,7 +30,7 @@ class ChainStorage extends Storage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doStore(array $frozenObject)
     {
@@ -50,7 +50,7 @@ class ChainStorage extends Storage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doFetch($id, array &$objects = array())
     {

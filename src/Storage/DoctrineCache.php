@@ -31,7 +31,7 @@ class DoctrineCache extends Storage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doStore(array $frozenObject)
     {
@@ -48,7 +48,7 @@ class DoctrineCache extends Storage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doFetch($id, array &$objects = array())
     {
