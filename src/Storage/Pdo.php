@@ -59,26 +59,18 @@ class Pdo extends Storage
      */
     protected function doStore(array $frozenObject)
     {
-        $stmt1 = sprintf('UPDATE %s SET body = ? WHERE id = ?', $this->table);
-        $stmt2 = sprintf('INSERT INTO %s (id,body) VALUES (?,?)', $this->table);
-
         foreach (array_reverse($frozenObject['objects']) as $id => $object) {
             if ($object['isDirty'] === true) {
                 $payload = array(
                     'class' => $object['class'],
                     'state' => $object['state']
                 );
-                $body = json_encode($payload);
 
-                $this->db->beginTransaction();
-
-                $stmt1 = $this->db->query($stmt1, array($body, $id));
-
-                if ($stmt1->rowCount() === 0) {
-                    $stmt2 = $this->db->query($stmt2, array($id, $body));
-                }
-
-                $this->db->commit();
+                $this->db->insert(
+                    $this->table,
+                    array('id' => $id, 'body' => json_encode($payload)),
+                    'id'
+                );
             }
         }
 

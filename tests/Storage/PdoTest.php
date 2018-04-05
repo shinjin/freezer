@@ -28,7 +28,7 @@ class PdoTest extends \PHPUnit\Framework\TestCase
         $this->db      = new Db(new \PDO('sqlite::memory:'));
         $this->storage = new Pdo($this->db, $this->freezer);
 
-        $this->db->exec('CREATE TABLE freezer (id char(40), body text)');
+        $this->db->exec('CREATE TABLE freezer (id char(40) primary key, body text)');
     }
 
     protected function getFrozenObjectFromStorage($id)
