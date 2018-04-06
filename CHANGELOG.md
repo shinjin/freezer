@@ -25,3 +25,7 @@
 - Update PDO storage to accept Shinjin\Pdo\Db object
 - Store __freezer value as array
 - Update Storage::doStore to return object id
+
+## [0.6.0] - 2018-04-05
+- Remove idProperty from LazyProxy
+- Update PDO storage to use upsert enhancement
