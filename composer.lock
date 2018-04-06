@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5108edeaf6a7d56ce1b419a348a65dab",
+    "content-hash": "8f9f0ab434509ff88e47be10faf3b38c",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -78,7 +78,7 @@
         },
         {
             "name": "shinjin/pdo",
-            "version": "0.6.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shinjin/pdo.git",
@@ -2151,7 +2151,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "shinjin/pdo": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
