@@ -127,7 +127,7 @@ $storage = new Freezer\Storage\Pdo(array('driver' => 'sqlite'), null, $use_lazyl
 
 $caveman = new class
 {
-    public $name        = 'Brendan';
+    public $name = 'Brendan';
 };
 
 $caveman->nationality = new class
