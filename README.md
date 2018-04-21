@@ -20,10 +20,15 @@ $ composer require shinjin/freezer
 ## Usage
 
 ``` php
-$storage = new \Freezer\Storage\Pdo(array('driver' => 'sqlite'));
+use Freezer\Storage\Pdo;
 
-$caveman = new Caveman;
-$caveman->name = 'Brendan';
+$storage = new Pdo(array('driver' => 'sqlite'));
+
+$caveman = new class
+{
+    public $name        = 'Brendan';
+    public $nationality = 'Canadian';
+};
 
 $id = $storage->store($caveman);
 
@@ -31,9 +36,13 @@ $id = $storage->store($caveman);
 
 $caveman = $storage->fetch($id);
 
-print_r($caveman->name);
+print_r($caveman);
 
-// still "Brendan"
+// class@anonymous Object
+// (
+//     [name] => Brendan
+//     [nationality] => Canadian
+// )
 ```
 See [Usage](docs/Usage.md) and [Old README](docs/OldREADME.md) for the original writeup.
 
